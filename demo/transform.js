@@ -11,4 +11,7 @@ window.onload = function() {
   }
 
   context.stroke();
+
+  var canvasAnima = document.getElementById('canvasAnima');
+  var contextAnima = canvasAnima.getContext('2d');
 }
