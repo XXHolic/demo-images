@@ -11,9 +11,9 @@ window.onload = function () {
     return (window.devicePixelRatio || 1) / backingStore;
   }
 
-  var ratio = getPixelRatio(ctx);
   var canvas = document.getElementById('drawingCanvas');
   var context = canvas.getContext('2d');
+  var ratio = getPixelRatio(context);
   // canvas 的坐标原点是左上角，向右和向下是正值
   // 图片 src: https://xxholic.github.io/lab/images/css-shape-other-five-start.png
 
