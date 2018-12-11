@@ -12,6 +12,6 @@ window.onload = function () {
     context.drawImage(img, 0, 0, 300, 90);
   };
 
-  img.src = './html5-rocks.png';
+  img.src = '../../images/html5-rocks.png';
 
 }
