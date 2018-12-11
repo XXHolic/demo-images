@@ -23,7 +23,7 @@ window.onload = function () {
     return can;
   }
 
-  var canvas = createHiDPICanvas(300,90);
+  var canvas = createHiDPICanvas(400,100);
   var context = canvas.getContext('2d');
 
   var img = new Image();
