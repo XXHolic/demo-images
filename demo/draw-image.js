@@ -20,7 +20,7 @@ window.onload = function () {
   var img = new Image();
 
   img.onload = function() {
-    // 样式里面 canvas 用了 100% 虽然有效，但执行下面语句，会没预期的无效
+    // 样式里面 canvas 用了 100% 虽然有效，但执行下面语句，会无效
     context.drawImage(img, 0, 0, 300 * ratio, 90 * ratio);
   };
 
