@@ -3,7 +3,9 @@ window.onload = function () {
   var canvas = document.getElementById('drawingCanvas');
   var context = canvas.getContext('2d');
   // canvas 的坐标原点是左上角，向右和向下是正值
-  // 图片 src: https://xxholic.github.io/lab/images/css-shape-other-five-start.png
+  context.font = "20px Arial";
+  context.fillStyle = "black";
+  context.fillText('This is canvas!',10,110);
 
   var img = new Image();
 

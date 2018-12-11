@@ -23,7 +23,7 @@ window.onload = function () {
     return can;
   }
 
-  var canvas = createHiDPICanvas(400,100);
+  var canvas = createHiDPICanvas(400,120);
   var context = canvas.getContext('2d');
 
   var img = new Image();
@@ -31,6 +31,10 @@ window.onload = function () {
   img.onload = function () {
     // 样式里面 canvas 用了 100% 虽然有效，但执行下面语句，会无效
     context.drawImage(img, 0, 0, 300, 90);
+    context.font = "20px Arial";
+    context.fillStyle = "black";
+    context.fillText('This is canvas!',10,110);
+
     document.getElementsByTagName('body')[0].appendChild(canvas);
   };
 

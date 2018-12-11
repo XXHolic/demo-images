@@ -11,14 +11,14 @@ window.onload = function () {
   context.fillText('This is canvas row2',10,40);
 
 
-  var canvasDeal = document.getElementById('drawingCanvasDeal');
-  var contextDeal = canvasDeal.getContext('2d');
+  // var canvasDeal = document.getElementById('drawingCanvasDeal');
+  // var contextDeal = canvasDeal.getContext('2d');
 
-  contextDeal.font = "20px Arial";
-  contextDeal.fillStyle = "black";
-  contextDeal.fillText('This is canvas!',10,20);
+  // contextDeal.font = "20px Arial";
+  // contextDeal.fillStyle = "black";
+  // contextDeal.fillText('This is canvas!',10,20);
 
-  contextDeal.fillStyle = "red";
-  contextDeal.fillText('This is canvas row2',10,40);
+  // contextDeal.fillStyle = "red";
+  // contextDeal.fillText('This is canvas row2',10,40);
 
 }
