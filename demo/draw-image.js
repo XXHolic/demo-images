@@ -1,4 +1,17 @@
 window.onload = function () {
+
+  var getPixelRatio = function (context) {
+    var backingStore = context.backingStorePixelRatio ||
+      context.webkitBackingStorePixelRatio ||
+      context.mozBackingStorePixelRatio ||
+      context.msBackingStorePixelRatio ||
+      context.oBackingStorePixelRatio ||
+      context.backingStorePixelRatio || 1;
+
+    return (window.devicePixelRatio || 1) / backingStore;
+  }
+
+  var ratio = getPixelRatio(ctx);
   var canvas = document.getElementById('drawingCanvas');
   var context = canvas.getContext('2d');
   // canvas 的坐标原点是左上角，向右和向下是正值
@@ -8,7 +21,7 @@ window.onload = function () {
 
   img.onload = function() {
     // 样式里面 canvas 用了 100% 虽然有效，但执行下面语句，会没预期的无效
-    context.drawImage(img, 0, 0, 300, 90);
+    context.drawImage(img, 0, 0, 300 * ratio, 90 * ratio);
   };
 
   img.src = './html5-rocks.png';
