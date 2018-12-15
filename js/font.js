@@ -28,9 +28,9 @@ window.onload = function () {
         var measureText = isLimitRow? (testLine+'...'):testLine;
         var metrics = context.measureText(measureText);
         var testWidth = metrics.width;
-        if (testWidth > maxWidth && n > 0) {
+        if (testWidth > maxWidth && n > 0 && row!==limitRow) {
             context.fillText(measureText, x, y);
-            line = "";
+            line = '';
             y += lineHeight;
             row++;
             if (isLimitRow) {
