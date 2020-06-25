@@ -53,7 +53,7 @@ def get_detail(articleId,write=0,type='0'):
 # 获取文章 ID
 def get_article_id(type='0'):
   page_num = 1
-  while page_num < maxPageNum:
+  while page_num < 2:
     name = jsonListFileName[type] + str(page_num) +".json"
     filename = "../data/ym/"+ name
     with open(filename, "r",encoding="utf-8") as f:
@@ -82,8 +82,9 @@ def deal_str(data):
   while result_index < result_len:
     searchObj = re.search(r'src=".*?"', result[result_index])
     url = searchObj.group()
-    imgTag = '<img class="detail-img" border="0" alt="" '+url+'>'
-    result_format.append(imgTag)
+    url_split = url.split('"')
+    # imgTag = '<img class="detail-img" border="0" alt="" '+url+'>'
+    result_format.append(url_split[1])
     result_index += 1
   # print(result)
   return result_format
