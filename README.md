@@ -1,2 +1,1 @@
-# canvas-demos
-simple demos of canvas
+# demo-images
