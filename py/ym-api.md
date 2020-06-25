@@ -53,7 +53,7 @@ IOS deviceId 40 位数字和字母
         "modelFieldNames": "Tag,Tag_Index,pageNames,Title,Subheading,Author,pcPageURL,CopyFrom,UpdateTime,DefaultPicUrl,GameScore,GameLib,TitleIntact,NodeId,editor,Content_Index",
         "articleId": "1298386",
         "appModelFieldNames": "",
-        "cacheMinutes": 10
+        "cacheMinutes": 60
     }
 }
 ```
