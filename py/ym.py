@@ -54,7 +54,7 @@ def write_json():
 # 获取图片链接
 def get_img_src():
   page_num = 1
-  while page_num < 2:
+  while page_num < 4:
     name = "list"+ str(page_num) +".json"
     filename = "../data/ym/"+ name
     with open(filename, "r",encoding="utf-8") as f:
@@ -64,7 +64,7 @@ def get_img_src():
         result = data_dict['result']
         result_index = 0
         result_len = len(result)
-        while result_index < result_index:
+        while result_index < result_len:
           result_item = result[result_index]
           img_list.append(result_item['thumbnails'][0])
           result_index += 1
@@ -85,7 +85,7 @@ def down_img():
     res = requests.get(img_item)
     with open(filename, "wb") as f:
         f.write(res.content)
-        print(img_index + filename + 'down success')
+        print(str(img_index) + filename + ' down success')
         f.close()
     img_index += 1
   return
