@@ -1,14 +1,19 @@
 import requests
 import json
 
+jsonListFileName = {
+  '0':'list',
+  '1':'jlist'
+}
+maxPageNum = 4
 reqList="https://appapi2.gamersky.com/v5/getCMSNewsList"
 reqParams= {
   "app":"GSAPP",
-  "deviceType":"Redmi 6",
-  "appVersion":"5.5.22",
+  "deviceType":"Redmi 8",
+  "appVersion":"5.5.21",
   "os":"android",
   "osVersion":"9",
-  "deviceId":"862622048437469",
+  "deviceId":"9232623448437989",
   "request":{
     "modelFieldNames":"Title,Author,ThumbnailsPicUrl,updateTime,mark",
     "tagIds":"",
@@ -27,8 +32,13 @@ reqParams= {
 }
 img_list = []
 
-def get_list(pageIndex=1,write=0):
+# pageIndex 分页页码
+# write 0-获取返回文本内容，1-返回对象
+# type 0-动态图，1-囧图
+def get_list(pageIndex=1,write=0,type='0'):
   reqParams['request']['pageIndex'] = pageIndex
+  if type == '1':
+    reqParams['request']['tags'] = '囧图'
   res = requests.post(reqList,json=reqParams,headers={'Content-Type':'chartset="utf-8"'})
   result = res.json()
   # print(res.apparent_encoding)
@@ -39,11 +49,11 @@ def get_list(pageIndex=1,write=0):
     return result
 
 # 写入 json 数据文件
-def write_json():
+def write_json(type='0'):
   page_num = 1
-  while page_num < 4:
-    back_data = get_list(page_num,1)
-    name = "list"+ str(page_num) +".json"
+  while page_num < maxPageNum:
+    back_data = get_list(page_num,1,type)
+    name = jsonListFileName[type] + str(page_num) +".json"
     filename = "../data/ym/"+ name
     with open(filename, "w+",encoding="utf-8") as f:
         f.write(back_data)
@@ -52,10 +62,10 @@ def write_json():
   return
 
 # 获取图片链接
-def get_img_src():
+def get_img_src(type='0'):
   page_num = 1
-  while page_num < 4:
-    name = "list"+ str(page_num) +".json"
+  while page_num < maxPageNum:
+    name = jsonListFileName[type] + str(page_num) +".json"
     filename = "../data/ym/"+ name
     with open(filename, "r",encoding="utf-8") as f:
         content = f.read()
@@ -92,10 +102,10 @@ def down_img():
 
 
 # 获取列表数据
-# write_json()
+# write_json('1')
 
 # 下载图片
-get_img_src()
-down_img()
+# get_img_src('1')
+# down_img()
 
 print('all done')
