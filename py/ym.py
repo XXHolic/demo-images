@@ -3,17 +3,27 @@ import json
 
 jsonListFileName = {
   '0':'list',
-  '1':'jlist'
+  '1':'jlist',
+  '2':'hlist',
+  '3':'xlist',
 }
+
+tagsName = {
+  '0':'动态图',
+  '1':'囧图',
+  '2':'今日快乐源泉',
+  '3':'星期一的丰满',
+}
+
 maxPageNum = 4
 reqList="https://appapi2.gamersky.com/v5/getCMSNewsList"
 reqParams= {
   "app":"GSAPP",
-  "deviceType":"Redmi 8",
-  "appVersion":"5.5.21",
+  "deviceType":"Redmi 7",
+  "appVersion":"5.5.23",
   "os":"android",
   "osVersion":"9",
-  "deviceId":"9232623448437989",
+  "deviceId":"9232666446537989",
   "request":{
     "modelFieldNames":"Title,Author,ThumbnailsPicUrl,updateTime,mark",
     "tagIds":"",
@@ -34,11 +44,10 @@ img_list = []
 
 # pageIndex 分页页码
 # write 0-获取返回文本内容，1-返回对象
-# type 0-动态图，1-囧图
+# type 0-动态图，1-囧图 2-今日快乐源泉 3-星期一的丰满
 def get_list(pageIndex=1,write=0,type='0'):
   reqParams['request']['pageIndex'] = pageIndex
-  if type == '1':
-    reqParams['request']['tags'] = '囧图'
+  reqParams['request']['tags'] = tagsName[type]
   res = requests.post(reqList,json=reqParams,headers={'Content-Type':'chartset="utf-8"'})
   result = res.json()
   # print(res.apparent_encoding)
@@ -102,10 +111,10 @@ def down_img():
 
 
 # 获取列表数据
-# write_json('1')
+# write_json('3')
 
 # 下载图片
-# get_img_src('1')
+# get_img_src('3')
 # down_img()
 
 print('all done')
