@@ -1,9 +1,8 @@
 {
-  "name": "canvas-demos",
+  "name": "demo-images",
   "version": "1.0.0",
-  "description": "simple demos of canvas",
+  "description": "images",
   "main": "index.js",
-  "repository": "https://github.com/XXHolic/canvas-demos.git",
   "author": "thy <972143891@qq.com>",
   "license": "MIT",
   "devDependencies": {
