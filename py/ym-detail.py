@@ -5,6 +5,7 @@ import os
 import math
 import random
 
+respoPre = 'https://xxholic.github.io/demo-images/'
 phoneType = ['Redmi K30','RAce2','nova 7 SE','Redmi Note8','HUAWEI P30','HUAWEI Mate 20','nova 5i Pro','nova 5i','HUAWEI Mate 20 X','OPPO Reno3','vivoY5s','vivoNEX3','vivoS6','vivoY9s']
 phoneTypeLen = len(phoneType)-1
 
@@ -128,7 +129,6 @@ def write_origin_detail(type='0'):
     res = get_detail(id_list[id_index],0,type)
     res_data = res['result'][0]
     contentText = res_data['Content_Index']
-    # new_content = deal_str(contentText,type)
     write_data = {
       'title':res_data['Title'],
       'time':res_data['UpdateTime'],
@@ -174,11 +174,13 @@ def deal_str(params={}):
         print('invalid: ' + img_url)
       else:
         result_format.append(img_url)
-    elif type == '1':
+    elif (type == '1' or type =='2'):
       img_url_split = img_url.split('/')
       img_url_split_len = len(img_url_split)
       name = img_url_split[img_url_split_len-1]
       filename = "../ym/detail/"
+      if type =='2':
+        filename = "../ym/detail/2/"
       img_url_1 = ''
       if img_url.find(invalidHost1[0]) > -1:
         level_1 = img_url_split[img_url_split_len-5]
@@ -224,7 +226,6 @@ def deal_str(params={}):
         filename = level_3_dir + "/" +name
         # jt_img_list.append({'level_1':level_1,'level_2':level_2,'level_3':level_3,'name':name,'src':img_url,'type':invalidHost1[1]})
 
-
       req_origin_img = ''
       has_small_1 = img_url.find('small')
       has_small_2 = img_url.find('_S')
@@ -237,10 +238,13 @@ def deal_str(params={}):
         req_origin_img = img_url
       if not os.path.exists(filename):
         res = requests.get(req_origin_img,headers=getHeader)
-
+        res_fail = 0
         if res.status_code !=200:
           res = requests.get(img_url,headers=getHeader)
           if res.status_code !=200:
+            res_fail = 1
+            random_404 = random_num(1,6)
+            img_url_1 = respoPre+'404/' + str(random_404) + '.jpg'
             print(img_url+' down failed')
         else:
           if has_small_1 > -1:
@@ -249,12 +253,12 @@ def deal_str(params={}):
           elif has_small_2 > -1:
             filename = filename.replace('_S','')
             img_url_1 = img_url_1.replace('_S','')
-
-        with open(filename, "wb") as f:
-          f.write(res.content)
-          totalCount['count'] = totalCount['count'] + 1
-          print(str(totalCount['count']) + ' down success')
-          f.close()
+        if res_fail<1:
+          with open(filename, "wb") as f:
+            f.write(res.content)
+            totalCount['count'] = totalCount['count'] + 1
+            print(str(totalCount['count']) + ' down success')
+            f.close()
       result_format.append(img_url_1)
     result_index += 1
   # print(result)
@@ -267,7 +271,7 @@ def dealData(type='0'):
   root = '../origin/ym-detail'
   items = os.listdir(root)
   for item in items:
-    name = item.replace('-1','')
+    name = item.replace('-'+type,'')
     path = os.path.join(root, item)
     with open(path, "r",encoding="utf-8") as f:
         content = f.read()
@@ -287,18 +291,14 @@ def dealData(type='0'):
 
 def main(type):
   type = str(type)
-  if type == '0':
-    get_article_id(type)
-    write_origin_detail(type)
-  elif type == '1':
-    get_article_id(type)
-    write_origin_detail(type)
+  get_article_id(type)
+  write_origin_detail(type)
   print('all done')
   return
 
-# main(1)
+# main(2)
 
-dealData(1)
+dealData(2)
 
 
 # origin_dd = 'http://www.gamersky.com/showimage/id_gamersky.shtml?https://img1.gamersky.com/image2020/06/20200623_zy_red_164_2/058.jpg'
