@@ -1,6 +1,17 @@
 import requests
 import json
 import re
+import math
+import random
+
+phoneType = ['Redmi K30','RAce2','nova 7 SE','Redmi Note8','HUAWEI P30','HUAWEI Mate 20','nova 5i Pro','nova 5i','HUAWEI Mate 20 X','OPPO Reno3','vivoY5s','vivoNEX3','vivoS6','vivoY9s']
+phoneTypeLen = len(phoneType)
+
+appVersion = ['5.5.19','5.5.20','5.5.21','5.5.22','5.5.23']
+appVersionLen = len(appVersion)
+
+osVersion = ['7','8','9']
+osVersionLen = len(osVersion)
 
 jsonListFileName = {
   '0':'list',
@@ -21,7 +32,7 @@ reqList="http://appapi2.gamersky.com/v5/getArticle"
 reqParams= {
     "app": "GSAPP",
     "deviceType": "Redmi 6",
-    "appVersion": "5.5.1",
+    "appVersion": "5.5.21",
     "os": "android",
     "osVersion": "9",
     "deviceId": "862623248437469",
@@ -35,13 +46,38 @@ reqParams= {
 }
 id_list = []
 
+# 返回随机数
+def random_num(min, max):
+  return random.randint(min,max)
+
+# 返回随机设备id
+def random_device_id():
+  index = 0
+  device_id = ''
+  while index < 15:
+    num = random.randint(0,9)
+    device_id = device_id + str(num)
+  return device_id
+
 # pageIndex 分页页码
 # write 0-获取返回文本内容，1-返回对象
 # type 0-动态图，1-囧图 2-今日快乐源泉 3-星期一的丰满
 def get_detail(articleId,write=0,type='0'):
   reqParams['request']['articleId'] = articleId
   # reqParams['request']['tags'] = tagsName[type]
-  res = requests.post(reqList,json=reqParams,headers={'Content-Type':'chartset="utf-8"'})
+
+  # 制造随机的数据
+  deviceTypeRandom = random_num(0,phoneTypeLen)
+  reqParams['deviceType']= phoneType[deviceTypeRandom]
+  appVersionRandom = random_num(0,appVersionLen)
+  reqParams['appVersion']= appVersion[appVersionRandom]
+  osVersionRandom = random_num(0,osVersionLen)
+  reqParams['osVersion']= osVersion[osVersionRandom]
+  deviceIdRandom = random_device_id()
+  reqParams['deviceId']= deviceIdRandom
+
+
+  res = requests.post(reqList,json=reqParams)
   result = res.json()
   # print(res.apparent_encoding)
   if write > 0:
@@ -114,7 +150,7 @@ def write_detail(type='0'):
   return
 
 
-get_article_id('0')
+get_article_id('1')
 write_detail()
 
 print('all done')
