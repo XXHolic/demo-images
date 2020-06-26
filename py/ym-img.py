@@ -30,7 +30,7 @@ def dealImg(path):
         draw = ImageDraw.Draw(im)
         draw.rectangle(box,'white','white')
         im.save(path)
-        totalCount.count = totalCount['count'] + 1
+        totalCount['count'] = totalCount['count'] + 1
     except OSError:
       print('error: '+path)
   print(str(totalCount['count']) + 'done')
