@@ -110,6 +110,9 @@ def get_article_id(type='0'):
   return
 
 # 处理内容字符串
+# 无权限访问的链接：https://imggif.gamersky.com/upimg/users/
+#
+invalidHost = 'imggif.gamersky.com'
 def deal_str(data):
   pattern = re.compile(r'\<img.*?>')
   result = pattern.findall(data)
@@ -121,7 +124,11 @@ def deal_str(data):
     url = searchObj.group()
     url_split = url.split('"')
     # imgTag = '<img class="detail-img" border="0" alt="" '+url+'>'
-    result_format.append(url_split[1])
+    img_url = url_split[1]
+    if img_url.find(invalidHost) > -1:
+      print('invalid: ' + img_url)
+    else:
+      result_format.append(url_split[1])
     result_index += 1
   # print(result)
   return result_format
@@ -150,8 +157,14 @@ def write_detail(type='0'):
     id_index += 1
   return
 
+def main():
+  index = 0
+  while index < 2:
+    type = str(index)
+    get_article_id(type)
+    write_detail(type)
+    index +=1
+  print('all done')
+  return;
 
-get_article_id('1')
-write_detail('1')
-
-print('all done')
+main()
