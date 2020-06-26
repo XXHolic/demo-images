@@ -54,7 +54,7 @@ reqParams= {
 }
 id_list = []
 # 囧图无法访问，所以要下载下来
-jt_img_list = []
+jt_total_count = 0
 
 
 # 返回随机数
@@ -120,14 +120,45 @@ def get_article_id(type='0'):
   # print(id_list)
   return
 
+# 获取详情并提取关键信息
+def write_origin_detail(type='0'):
+  id_index = 0
+  id_len = len(id_list)
+  while id_index < id_len:
+    res = get_detail(id_list[id_index],0,type)
+    res_data = res['result'][0]
+    contentText = res_data['Content_Index']
+    # new_content = deal_str(contentText,type)
+    write_data = {
+      'title':res_data['Title'],
+      'time':res_data['UpdateTime'],
+      'content':contentText,
+    }
+
+    name = str(id_list[id_index]) +"-"+ type +".json"
+    filename = "../origin/ym-detail/"+ name
+    with open(filename, "w+",encoding="utf-8") as f:
+        f.write(json.dumps(write_data,ensure_ascii=False))
+        print(str(id_index) + filename + ' write success')
+        f.close()
+    id_index += 1
+  return
+
+
 # 处理内容字符串
 # 图无权限访问的链接：https://imggif.gamersky.com/upimg/users/
 # http://img1.gamersky.com/image2020/05/20200519_ls_red_141_4/gamersky_047small_094_2020519182898.jpg","http://c-ssl.duitang.com/uploads/item/202005/04/20200504131413_smQWw.gif"
 #
 invalidHost0 = ['imggif.gamersky.com']
 invalidHost1 = ['img1.gamersky.com','c-ssl.duitang.com']
+totalCount = {'count':0}
+getHeader={
+  'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1'
+}
 
-def deal_str(data,type):
+def deal_str(params={}):
+  data = params['data']
+  type = params['type']
   pattern = re.compile(r'\<img.*?>')
   result = pattern.findall(data)
   result_len = len(result)
@@ -202,11 +233,13 @@ def deal_str(data,type):
       elif has_small_2 > -1:
         req_origin_img = img_url.replace('_S','')
 
+      if not req_origin_img:
+        req_origin_img = img_url
       if not os.path.exists(filename):
-        res = requests.get(req_origin_img)
+        res = requests.get(req_origin_img,headers=getHeader)
 
         if res.status_code !=200:
-          res = requests.get(img_url)
+          res = requests.get(img_url,headers=getHeader)
           if res.status_code !=200:
             print(img_url+' down failed')
         else:
@@ -219,98 +252,53 @@ def deal_str(data,type):
 
         with open(filename, "wb") as f:
           f.write(res.content)
-          print(str(result_index) + ' down success')
+          totalCount['count'] = totalCount['count'] + 1
+          print(str(totalCount['count']) + ' down success')
           f.close()
       result_format.append(img_url_1)
     result_index += 1
   # print(result)
   return result_format
 
-# 获取详情并提取关键信息
-def write_detail(type='0'):
-  id_index = 0
-  id_len = len(id_list)
-  while id_index < id_len:
-    res = get_detail(id_list[id_index],0,type)
-    res_data = res['result'][0]
-    contentText = res_data['Content_Index']
-    new_content = deal_str(contentText,type)
-    write_data = {
-      'title':res_data['Title'],
-      'time':res_data['UpdateTime'],
-      'content':new_content,
-    }
 
-    name = str(id_list[id_index]) +".json"
-    filename = "../data/ym-detail/"+ name
-    with open(filename, "w+",encoding="utf-8") as f:
-        f.write(json.dumps(write_data,ensure_ascii=False))
-        print(str(id_index) + filename + ' write success')
+# 处理本地详情数据
+def dealData(type='0'):
+  type = str(type)
+  root = '../origin/ym-detail'
+  items = os.listdir(root)
+  for item in items:
+    name = item.replace('-1','')
+    path = os.path.join(root, item)
+    with open(path, "r",encoding="utf-8") as f:
+        content = f.read()
+        # print(content)
+        data_dict = json.loads(content)
+        result = data_dict['content']
+        newContent = deal_str({'data':result,'type':type})
+        data_dict['content'] = newContent
+        newPath = '../data/ym-detail/'+name
+        with open(newPath, "w+",encoding="utf-8") as f:
+            f.write(json.dumps(data_dict,ensure_ascii=False))
+            print(newPath + ' write success')
+            f.close()
         f.close()
-    id_index += 1
+  print('all done')
   return
-
-
-# 获得图片并下载，目前只有囧图
-def down_img():
-  img_index = 0
-  img_len = len(jt_img_list)
-  while img_index < img_len:
-    img_item = jt_img_list[img_index]
-    # print(img_item)
-    img_type = img_item['type']
-    name = img_item['name']
-    src = img_item['src']
-    level_1 = img_item['level_1']
-    level_2 = img_item['level_2']
-    level_3 = img_item['level_3']
-    level_1_dir = "../ym/detail/"+level_1
-    level_2_dir = level_1_dir+"/"+level_2
-    level_3_dir = level_2_dir+"/"+level_3
-    if not os.path.exists(level_1_dir):
-      os.mkdir(level_1_dir)
-    if not os.path.exists(level_2_dir):
-      os.mkdir(level_2_dir)
-    if not os.path.exists(level_3_dir):
-      os.mkdir(level_3_dir)
-
-    if img_type == invalidHost1[0]:
-      level_4 = img_item['level_4']
-      level_4_dir = level_3_dir+"/"+level_4
-      if not os.path.exists(level_4_dir):
-        os.mkdir(level_4_dir)
-      filename = level_4_dir + "/" +name
-    elif img_type == invalidHost1[1]:
-      filename = level_3_dir + "/" +name
-
-    if (os.path.exists(filename)):
-      print('exists')
-    else:
-      if src.find('small') > -1:
-        src = src.replace('small','origin')
-      res = requests.get(src)
-      with open(filename, "wb") as f:
-          f.write(res.content)
-          print(str(img_index) + ' down success')
-          f.close()
-    img_index += 1
-  return
-
-# 分析图片域名
-
 
 def main(type):
   type = str(type)
   if type == '0':
     get_article_id(type)
-    write_detail(type)
+    write_origin_detail(type)
   elif type == '1':
     get_article_id(type)
-    write_detail(type)
+    write_origin_detail(type)
   print('all done')
   return
 
-main(1)
+# main(1)
+
+dealData(1)
 
 
 # origin_dd = 'http://www.gamersky.com/showimage/id_gamersky.shtml?https://img1.gamersky.com/image2020/06/20200623_zy_red_164_2/058.jpg'
