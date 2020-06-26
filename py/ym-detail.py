@@ -146,6 +146,9 @@ def deal_str(data,type):
     elif type == '1':
       img_url_split = img_url.split('/')
       img_url_split_len = len(img_url_split)
+      name = img_url_split[img_url_split_len-1]
+      filename = "../ym/detail/"
+      img_url_1 = ''
       if img_url.find(invalidHost1[0]) > -1:
         level_1 = img_url_split[img_url_split_len-5]
         if level_1 != invalidHost1[0]:
@@ -153,20 +156,72 @@ def deal_str(data,type):
         level_2 = img_url_split[img_url_split_len-4]
         level_3 = img_url_split[img_url_split_len-3]
         level_4 = img_url_split[img_url_split_len-2]
-        name = img_url_split[img_url_split_len-1]
         use_data = [detailImgPre[type],level_1, level_2,level_3,level_4, name]
         img_url_1 = '/'.join(use_data)
-        jt_img_list.append({'level_1':level_1,'level_2':level_2,'level_3':level_3,'level_4':level_4,'name':name,'src':img_url,'type':invalidHost1[0]})
-        result_format.append(img_url_1)
+
+        level_1_dir = filename + level_1
+        level_2_dir = level_1_dir+"/"+level_2
+        level_3_dir = level_2_dir+"/"+level_3
+        level_4_dir = level_3_dir+"/"+level_4
+        if not os.path.exists(level_1_dir):
+          os.mkdir(level_1_dir)
+        if not os.path.exists(level_2_dir):
+          os.mkdir(level_2_dir)
+        if not os.path.exists(level_3_dir):
+          os.mkdir(level_3_dir)
+        if not os.path.exists(level_4_dir):
+          os.mkdir(level_4_dir)
+        filename = level_4_dir + "/" +name
+        # jt_img_list.append({'level_1':level_1,'level_2':level_2,'level_3':level_3,'level_4':level_4,'name':name,'src':img_url,'type':invalidHost1[0]})
       elif img_url.find(invalidHost1[1]) > -1:
         level_1 = img_url_split[2]
         level_2 = img_url_split[img_url_split_len-3]
         level_3 = img_url_split[img_url_split_len-2]
-        name = img_url_split[img_url_split_len-1]
         use_data = [detailImgPre[type],level_1, level_2,level_3, name]
         img_url_1 = '/'.join(use_data)
-        jt_img_list.append({'level_1':level_1,'level_2':level_2,'level_3':level_3,'name':name,'src':img_url,'type':invalidHost1[1]})
-        result_format.append(img_url_1)
+
+
+        level_1_dir = filename + level_1
+        level_2_dir = level_1_dir+"/"+level_2
+        level_3_dir = level_2_dir+"/"+level_3
+        if not os.path.exists(level_1_dir):
+          os.mkdir(level_1_dir)
+        if not os.path.exists(level_2_dir):
+          os.mkdir(level_2_dir)
+        if not os.path.exists(level_3_dir):
+          os.mkdir(level_3_dir)
+        filename = level_3_dir + "/" +name
+        # jt_img_list.append({'level_1':level_1,'level_2':level_2,'level_3':level_3,'name':name,'src':img_url,'type':invalidHost1[1]})
+
+
+      req_origin_img = ''
+      has_small_1 = img_url.find('small')
+      has_small_2 = img_url.find('_S')
+      if has_small_1 > -1:
+        req_origin_img = img_url.replace('small','origin')
+      elif has_small_2 > -1:
+        req_origin_img = img_url.replace('_S','')
+
+      if not os.path.exists(filename):
+        res = requests.get(req_origin_img)
+
+        if res.status_code !=200:
+          res = requests.get(img_url)
+          if res.status_code !=200:
+            print(img_url+' down failed')
+        else:
+          if has_small_1 > -1:
+            filename = filename.replace('small','origin')
+            img_url_1 = img_url_1.replace('small','origin')
+          elif has_small_2 > -1:
+            filename = filename.replace('_S','')
+            img_url_1 = img_url_1.replace('_S','')
+
+        with open(filename, "wb") as f:
+          f.write(res.content)
+          print(str(result_index) + ' down success')
+          f.close()
+      result_format.append(img_url_1)
     result_index += 1
   # print(result)
   return result_format
@@ -202,7 +257,7 @@ def down_img():
   img_len = len(jt_img_list)
   while img_index < img_len:
     img_item = jt_img_list[img_index]
-    print(img_item)
+    # print(img_item)
     img_type = img_item['type']
     name = img_item['name']
     src = img_item['src']
@@ -232,9 +287,7 @@ def down_img():
       print('exists')
     else:
       if src.find('small') > -1:
-        origin_pre = 'http://www.gamersky.com/showimage/id_gamersky.shtml?'
-        src = origin_pre + src.replace('small','origin')
-        filename = filename.replace('small','origin')
+        src = src.replace('small','origin')
       res = requests.get(src)
       with open(filename, "wb") as f:
           f.write(res.content)
@@ -254,8 +307,25 @@ def main(type):
   elif type == '1':
     get_article_id(type)
     write_detail(type)
-    down_img()
   print('all done')
   return
 
 main(1)
+
+
+# origin_dd = 'http://www.gamersky.com/showimage/id_gamersky.shtml?https://img1.gamersky.com/image2020/06/20200623_zy_red_164_2/058.jpg'
+# test = 'http://img1.gamersky.com/image2020/06/20200624_ls_red_141_4/gamersky_028small_056_2020624182886F_S.jpg'
+
+# test_origin = ''
+# if test.find('_S') > -1:
+#   test_origin = test.replace('_S','')
+# print(test_origin)
+# res = requests.get(test_origin)
+# if res.status_code !=200:
+#   print(test_origin+'bad request')
+#   res = requests.get(test)
+
+# with open('./gamersky_028origin_056_2020624182886F.jpg', "wb") as f:
+#   f.write(res.content)
+#   print(' down success')
+#   f.close()
