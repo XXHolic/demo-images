@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 jsonListFileName = {
   '0':'list',
@@ -101,11 +102,14 @@ def down_img():
     img_item_arr = img_item.split('/')
     img_arr_len = len(img_item_arr)
     filename = "../ym/cover/"+ img_item_arr[img_arr_len-1]
-    res = requests.get(img_item)
-    with open(filename, "wb") as f:
-        f.write(res.content)
-        print(str(img_index) + filename + ' down success')
-        f.close()
+    if (os.path.exists(filename)):
+      print('exists')
+    else:
+      res = requests.get(img_item)
+      with open(filename, "wb") as f:
+          f.write(res.content)
+          print(str(img_index) + filename + ' down success')
+          f.close()
     img_index += 1
   return
 
