@@ -5,13 +5,13 @@ import math
 import random
 
 phoneType = ['Redmi K30','RAce2','nova 7 SE','Redmi Note8','HUAWEI P30','HUAWEI Mate 20','nova 5i Pro','nova 5i','HUAWEI Mate 20 X','OPPO Reno3','vivoY5s','vivoNEX3','vivoS6','vivoY9s']
-phoneTypeLen = len(phoneType)
+phoneTypeLen = len(phoneType)-1
 
 appVersion = ['5.5.19','5.5.20','5.5.21','5.5.22','5.5.23']
-appVersionLen = len(appVersion)
+appVersionLen = len(appVersion) - 1
 
 osVersion = ['7','8','9']
-osVersionLen = len(osVersion)
+osVersionLen = len(osVersion) - 1
 
 jsonListFileName = {
   '0':'list',
@@ -27,7 +27,7 @@ tagsName = {
   '3':'星期一的丰满',
 }
 
-maxPageNum = 2
+maxPageNum = 3
 reqList="http://appapi2.gamersky.com/v5/getArticle"
 reqParams= {
     "app": "GSAPP",
@@ -57,6 +57,7 @@ def random_device_id():
   while index < 15:
     num = random.randint(0,9)
     device_id = device_id + str(num)
+    index += 1
   return device_id
 
 # pageIndex 分页页码
@@ -89,7 +90,7 @@ def get_detail(articleId,write=0,type='0'):
 # 获取文章 ID
 def get_article_id(type='0'):
   page_num = 1
-  while page_num < 2:
+  while page_num < maxPageNum:
     name = jsonListFileName[type] + str(page_num) +".json"
     filename = "../data/ym/"+ name
     with open(filename, "r",encoding="utf-8") as f:
@@ -151,6 +152,6 @@ def write_detail(type='0'):
 
 
 get_article_id('1')
-write_detail()
+write_detail('1')
 
 print('all done')
