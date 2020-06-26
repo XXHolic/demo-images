@@ -28,6 +28,13 @@ tagsName = {
   '3':'星期一的丰满',
 }
 
+detailImgPre = {
+  '0':'',
+  '1':'https://xxholic.github.io/demo-images/ym/detail',
+  '2':'今日快乐源泉',
+  '3':'星期一的丰满',
+}
+
 maxPageNum = 3
 reqList="http://appapi2.gamersky.com/v5/getArticle"
 reqParams= {
@@ -48,6 +55,7 @@ reqParams= {
 id_list = []
 # 囧图无法访问，所以要下载下来
 jt_img_list = []
+
 
 # 返回随机数
 def random_num(min, max):
@@ -140,11 +148,13 @@ def deal_str(data,type):
       img_url_split_len = len(img_url_split)
       if img_url.find(invalidHost1[0]) > -1:
         level_1 = img_url_split[img_url_split_len-5]
+        if level_1 != invalidHost1[0]:
+          level_1 = invalidHost1[0] + '-' + level_1
         level_2 = img_url_split[img_url_split_len-4]
         level_3 = img_url_split[img_url_split_len-3]
         level_4 = img_url_split[img_url_split_len-2]
         name = img_url_split[img_url_split_len-1]
-        use_data = [level_1, level_2,level_3,level_4, name]
+        use_data = [detailImgPre[type],level_1, level_2,level_3,level_4, name]
         img_url_1 = '/'.join(use_data)
         jt_img_list.append({'level_1':level_1,'level_2':level_2,'level_3':level_3,'level_4':level_4,'name':name,'src':img_url,'type':invalidHost1[0]})
         result_format.append(img_url_1)
@@ -153,7 +163,7 @@ def deal_str(data,type):
         level_2 = img_url_split[img_url_split_len-3]
         level_3 = img_url_split[img_url_split_len-2]
         name = img_url_split[img_url_split_len-1]
-        use_data = [level_1, level_2,level_3, name]
+        use_data = [detailImgPre[type],level_1, level_2,level_3, name]
         img_url_1 = '/'.join(use_data)
         jt_img_list.append({'level_1':level_1,'level_2':level_2,'level_3':level_3,'name':name,'src':img_url,'type':invalidHost1[1]})
         result_format.append(img_url_1)
@@ -186,8 +196,7 @@ def write_detail(type='0'):
   return
 
 
-# jt_img_list = [{'level_1':'06','level_2':'20200623_zy_red_164_2','name':'014_S.jpg','src':'https://img1.gamersky.com/image2020/06/20200623_zy_red_164_2/014_S.jpg'}]
-# 获得图片并下载
+# 获得图片并下载，目前只有囧图
 def down_img():
   img_index = 0
   img_len = len(jt_img_list)
@@ -222,10 +231,14 @@ def down_img():
     if (os.path.exists(filename)):
       print('exists')
     else:
+      if src.find('small') > -1:
+        origin_pre = 'http://www.gamersky.com/showimage/id_gamersky.shtml?'
+        src = origin_pre + src.replace('small','origin')
+        filename = filename.replace('small','origin')
       res = requests.get(src)
       with open(filename, "wb") as f:
           f.write(res.content)
-          print(str(img_index) + filename + ' down success')
+          print(str(img_index) + ' down success')
           f.close()
     img_index += 1
   return
@@ -246,4 +259,3 @@ def main(type):
   return
 
 main(1)
-
