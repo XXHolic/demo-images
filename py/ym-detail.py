@@ -299,21 +299,3 @@ def main(type):
 # main(2)
 
 dealData(2)
-
-
-# origin_dd = 'http://www.gamersky.com/showimage/id_gamersky.shtml?https://img1.gamersky.com/image2020/06/20200623_zy_red_164_2/058.jpg'
-# test = 'http://img1.gamersky.com/image2020/06/20200624_ls_red_141_4/gamersky_028small_056_2020624182886F_S.jpg'
-
-# test_origin = ''
-# if test.find('_S') > -1:
-#   test_origin = test.replace('_S','')
-# print(test_origin)
-# res = requests.get(test_origin)
-# if res.status_code !=200:
-#   print(test_origin+'bad request')
-#   res = requests.get(test)
-
-# with open('./gamersky_028origin_056_2020624182886F.jpg', "wb") as f:
-#   f.write(res.content)
-#   print(' down success')
-#   f.close()

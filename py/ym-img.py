@@ -50,4 +50,4 @@ def find_files(path):
   return
 
 
-find_files('../ym/detail/img1.gamersky.com')
+find_files('../ym/detail/2')
