@@ -32,8 +32,8 @@ tagsName = {
 detailImgPre = {
   '0':'',
   '1':'https://xxholic.github.io/demo-images/ym/detail',
-  '2':'今日快乐源泉',
-  '3':'星期一的丰满',
+  '2':'https://xxholic.github.io/demo-images/ym/detail/2',
+  '3':'https://xxholic.github.io/demo-images/ym/detail/3',
 }
 
 maxPageNum = 3
