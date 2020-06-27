@@ -18,7 +18,7 @@ def isImg(name):
 
 totalCount = {'count':0}
 
-def dealImg(path):
+def dealImg(path,type):
   isImage = isImg(path)
   if isImage:
     try:
@@ -27,6 +27,8 @@ def dealImg(path):
         height = im.height
         width = im.width
         box = (width-100, height-20, width,height)
+        if type == '3':
+          box = (width-120, height-50, width,height)
         draw = ImageDraw.Draw(im)
         draw.rectangle(box,'white','white')
         im.save(path)
@@ -46,8 +48,8 @@ def find_files(path):
       find_files(os.path.join(path, i))
   files = [i for i in lsdir if os.path.isfile(os.path.join(path,i))]
   for f in files:
-    dealImg(os.path.join(path, f))
+    dealImg(os.path.join(path, f),'3')
   return
 
 
-find_files('../ym/detail/2')
+find_files('../ym/detail/3')

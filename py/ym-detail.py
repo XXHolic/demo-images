@@ -174,13 +174,15 @@ def deal_str(params={}):
         print('invalid: ' + img_url)
       else:
         result_format.append(img_url)
-    elif (type == '1' or type =='2'):
+    elif (type == '1' or type =='2' or type =='3'):
       img_url_split = img_url.split('/')
       img_url_split_len = len(img_url_split)
       name = img_url_split[img_url_split_len-1]
       filename = "../ym/detail/"
       if type =='2':
         filename = "../ym/detail/2/"
+      if type =='3':
+        filename = "../ym/detail/3/"
       img_url_1 = ''
       if img_url.find(invalidHost1[0]) > -1:
         level_1 = img_url_split[img_url_split_len-5]
@@ -296,6 +298,8 @@ def main(type):
   print('all done')
   return
 
-# main(2)
+# 先生成本地文件
+# main(3)
 
-dealData(2)
+# 再根据本地文件请求，减少请求次数
+# dealData(3)
