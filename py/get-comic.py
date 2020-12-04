@@ -22,11 +22,10 @@ req_headers = {
 }
 
 baseRoot= '../comic/一拳超人/'
-maxPageNum = 41
-chapter='%E7%AC%AC141%E5%9B%9E'
+maxPageNum = 49
+chapter='%E7%AC%AC143%E5%9B%9E'
 fileType = ".jpg.webp"
 reqList="https://i.hamreus.com/ps3/y/yiquanchaoren/"+chapter+"/"
-https://i.hamreus.com/ps3/y/yiquanchaoren/第141回/seemh-034-4f25.jpg.webp?e=1599994615&m=fXZEZhpCKwACFeWRF_oooQ
 
 # 一般单页
 img_list = []
@@ -138,8 +137,8 @@ def clear_file():
 
 
 # 主程序
-# create_fold()
-# deal_img()
+create_fold()
+deal_img()
 # deal_contact_img()
 # deal_wired_img()
 # clear_file() // 这个建议最后单独执行
