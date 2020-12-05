@@ -28,7 +28,7 @@ req_headers = {
 # reqList="https://i.hamreus.com/ps3/y/yiquanchaoren/"+chapter+"/"
 
 
-baseRoot= '../comic/冰海战记/'
+baseRoot= '../comic/binghaizhanji/'
 maxPageNum = 50
 fileType = ".webp"
 reqList="https://res.wnixk.com/image/view/"
@@ -57,7 +57,7 @@ def down_img(localFold,data):
     fold_name = urllib.parse.unquote(localFold) + '/'
     filename = baseRoot +fold_name+ img_item_arr[img_arr_len-1]
     if (os.path.exists(filename)):
-      print(str(img_index)+'exists')
+      print(str(img_index)+' exists')
     else:
       res = requests.get(img_item,headers=req_headers)
       # print(res.status_code)
