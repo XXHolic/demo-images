@@ -132,9 +132,9 @@ def clear_file(chapter):
   return
 
 def main():
-  startDire = 61
-  startDownChapter = 1618180
-  while startDire <= 70:
+  startDire = 71
+  startDownChapter = 1618190
+  while startDire <= 90:
     create_fold(str(startDire))
     deal_img(str(startDire),str(startDownChapter))
     startDire += 1
