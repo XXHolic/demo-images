@@ -6,7 +6,7 @@ import urllib.parse
 import utils
 
 req_headers = {
-  "authority":"res.wnixk.com",
+  "authority":"res.manhua39.com",
   # "path":"/image/view/",
   "scheme":"https",
   "accept":"image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
@@ -21,17 +21,10 @@ req_headers = {
   "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
 }
 
-# baseRoot= '../comic/一拳超人/'
-# maxPageNum = 49
-# chapter='%E7%AC%AC143%E5%9B%9E'
-# fileType = ".jpg.webp"
-# reqList="https://i.hamreus.com/ps3/y/yiquanchaoren/"+chapter+"/"
-
-
 baseRoot= '../comic/binghaizhanji/'
-maxPageNum = 50
+maxPageNum = 100
 fileType = ".webp"
-reqList="https://res.wnixk.com/image/view/"
+reqList="https://res.manhua39.com/image/view"
 
 # 一般单页
 # img_list = []
@@ -66,6 +59,9 @@ def down_img(localFold,data):
           f.write(res.content)
           print('chapter '+localFold + '-' + str(img_index+1) + ' down success')
           f.close()
+      else:
+        # 没有正确响应，认定没有接下来的图片了，就跳出循环
+        img_index = img_len
     img_index += 1
   return
 
@@ -132,9 +128,9 @@ def clear_file(chapter):
   return
 
 def main():
-  startDire = 71
-  startDownChapter = 1618190
-  while startDire <= 90:
+  startDire = 1
+  startDownChapter = 94817
+  while startDire <= 10:
     create_fold(str(startDire))
     deal_img(str(startDire),str(startDownChapter))
     startDire += 1

@@ -38,3 +38,26 @@ def getFileList(dir, Filelist):
 
       getFileList(newDir, Filelist)
   return Filelist
+
+
+  # 冰海战记的配置
+req_headers = {
+  "authority":"res.wnixk.com",
+  # "path":"/image/view/",
+  "scheme":"https",
+  "accept":"image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+  "accept-encoding":"gzip, deflate, br",
+  "accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
+  "cache-control":"no-cache",
+  "pragma":"no-cache",
+  "referer":"https://www.shut123.com/",
+  "sec-fetch-dest":"image",
+  "sec-fetch-mode":"no-cors",
+  "sec-fetch-site":"cross-site",
+  "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
+}
+
+baseRoot= '../comic/binghaizhanji/'
+maxPageNum = 50
+fileType = ".webp"
+reqList="https://res.wnixk.com/image/view/"
