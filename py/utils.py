@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import os
+import re
 
 def mkdir(path):
 
@@ -39,10 +40,28 @@ def getFileList(dir, Filelist):
       getFileList(newDir, Filelist)
   return Filelist
 
+# 从 <img src="33333" /> 这样的标签中提取出 src 的值
+def getImgSrc(data):
+  searchObj = re.search(r'src=".*?"', data)
+  url = searchObj.group()
+  url_split = url.split('"')
+  return url_split[1]
+
+
+# 从 <h2>some content</h2> 这样的标签中提取出 some content
+# def getHtmlLabelContent(data): 无效，先放这里
+#   searchObj = re.match(r'<[a-zA-Z]+.*?>([\s\S]*?)<\/[a-zA-Z]+.*?>', data)
+#   content = ''
+#   if (searchObj):
+#     content = searchObj.group()
+#   else:
+#     print ("No match: ",data)
+#   return content
+
 
   # 冰海战记的配置
 req_headers = {
-  "authority":"res.wnixk.com",
+  "authority":"res.manhua39.com",
   # "path":"/image/view/",
   "scheme":"https",
   "accept":"image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
@@ -58,6 +77,6 @@ req_headers = {
 }
 
 baseRoot= '../comic/binghaizhanji/'
-maxPageNum = 50
+maxPageNum = 100
 fileType = ".webp"
-reqList="https://res.wnixk.com/image/view/"
+reqList="https://res.manhua39.com/image/view"
