@@ -193,9 +193,9 @@ def clear_file(chapter):
   return
 
 def main():
-  startDire = 61
-  startDownChapter = 167807
-  while startDire <= 110:
+  startDire = 271
+  startDownChapter = 561198
+  while startDire <= 271:
     create_fold(str(startDire))
     get_img_address_html(str(startDire),str(startDownChapter))
     startDire += 1
