@@ -207,7 +207,7 @@ def main():
       chapterList = json.loads(content)
       chapterNum = len(chapterList)
       startDire = 1
-      while startDire <= 1:
+      while startDire <= chapterNum:
         startDownChapter = chapterList[startDire-1]
         create_fold(str(startDire))
         get_img_address_html(str(startDire),str(startDownChapter))
