@@ -11,8 +11,7 @@ chapterListHeaders = {
   "accept-encoding":"gzip, deflate, br",
   "accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
   "cache-control":"no-cache",
-  "cookie":"UM_distinctid=174a991ad1a26c-0afb998ad92617-3323767-1fa400-174a991ad1b5a8; __gads=ID=289a30228745382c-22cecc6d28c500f5:T=1607699470:RT=1607699470:R:S=ALNI_MbODWxVquBiHUrh8moe6CHup0kNMA; CNZZDATA1278325662=1030922568-1600569125-https%253A%252F%252Fcn.bing.com%252F%7C1607947301",
-  "Host":"www.manhuaniu.com",
+  "cookie":"UM_distinctid=174a991ad1a26c-0afb998ad92617-3323767-1fa400-174a991ad1b5a8; __gads=ID=289a30228745382c-22cecc6d28c500f5:T=1607699470:RT=1607699470:R:S=ALNI_MbODWxVquBiHUrh8moe6CHup0kNMA; CNZZDATA1278325662=1030922568-1600569125-https%253A%252F%252Fcn.bing.com%252F%7C1608033854",
   "pragma":"no-cache",
   "sec-fetch-dest":"document",
   "sec-fetch-mode":"navigate",
@@ -30,7 +29,7 @@ chapterHeaders = {
   "cookie":"UM_distinctid=174a991ad1a26c-0afb998ad92617-3323767-1fa400-174a991ad1b5a8; __gads=ID=289a30228745382c-22cecc6d28c500f5:T=1607699470:RT=1607699470:R:S=ALNI_MbODWxVquBiHUrh8moe6CHup0kNMA; CNZZDATA1278325662=1030922568-1600569125-https%253A%252F%252Fcn.bing.com%252F%7C1607772159",
   "Host":"www.manhuaniu.com",
   "pragma":"no-cache",
-  "referer":"https://www.manhuaniu.com/manhua/15509/",
+  "referer":"https://www.manhuaniu.com/manhua/3485/",
   "sec-fetch-dest":"document",
   "sec-fetch-mode":"navigate",
   "sec-fetch-site":"same-origin",
@@ -54,11 +53,14 @@ imgHeader = {
   "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
 }
 
-baseRoot= '../comic//'
+baseRoot= '../comic/jinJiDeJuRen/'
+# baseRoot= '../comic/jinJiDeJuRenQianZhuan/'
 maxPageNum = 200
 fileType = ".html"
-reqList="https://www.manhuaniu.com/manhua/15509/"
+imgType = '.jpg'
+reqList="https://www.manhuaniu.com/manhua/3485/"
 chapterFile = baseRoot + 'chapter.json'
+preChapterFile = '../comic/jinJiDeJuRenQianZhuan/chapter.json'
 
 def create_fold(foldName):
   name = urllib.parse.unquote(foldName)
@@ -81,7 +83,7 @@ def down_img(localFold,data,isDirect):
     else:
       img_item_spot_arr = img_item_arr_last.split('.')
       img_item_spot_len = len(img_item_spot_arr)
-      filename = baseRoot +fold_name+ str(imgCount) + '.' + img_item_spot_arr[img_item_spot_len-1] + 'webp'
+      filename = baseRoot +fold_name+ str(imgCount) + '.' + img_item_spot_arr[img_item_spot_len-1] + imgType
     if (os.path.exists(filename)):
       print(str(img_index)+' exists')
     else:
@@ -160,24 +162,38 @@ def get_img_address_html(localFold,downChapter):
 
 # 获取章节数据
 def getChapterList():
-  reqUrl = 'https://www.manhuaniu.com/manhua/15509/'
+  reqUrl = 'https://www.manhuaniu.com/manhua/3485/'
   res = requests.get(reqUrl,headers=chapterListHeaders)
   # print(res.status_code)
   if (res.status_code == 200):
-    pattern = re.compile(r'href="/manhua/15509/+.*?html" class="active"')
+    pattern = re.compile(r'href="/manhua/3485/+.*?html" class="active"')
     result = pattern.findall(res.text)
+    # 前传
+    qianZhuan = []
+    # 正传
+    zhengZhuan = []
     # print(result)
     if (len(result)):
       for index,value in enumerate(result):
         valueSplit1 = value.split('.')
         valueSplit2 = valueSplit1[0].split('/')
         valueSplit2Len = len(valueSplit2)
-        result[index] = valueSplit2[valueSplit2Len-1]
+        chapterLink = int(valueSplit2[valueSplit2Len-1])
+        if(chapterLink >= 355906 and chapterLink <= 355971 ):
+          qianZhuan.append(chapterLink)
+        else:
+          zhengZhuan.append(chapterLink)
+
     # print(len(result))
       with open(chapterFile, "wb") as f:
-        resultStr = json.dumps(result)
+        resultStr = json.dumps(zhengZhuan)
         f.write(resultStr.encode(encoding='UTF-8'))
-        print('get chapter list success')
+        print('get zhengZhuan chapter list success')
+        f.close()
+      with open(preChapterFile, "wb") as f:
+        resultStr = json.dumps(qianZhuan)
+        f.write(resultStr.encode(encoding='UTF-8'))
+        print('get qianZhuan chapter list success')
         f.close()
   else:
     print('get chapter failed')
@@ -202,12 +218,13 @@ def clear_file(chapter):
 def main():
   # getChapterList()
   # return
+  # preChapterFile
   with open(chapterFile, "r",encoding="utf-8") as f:
       content = f.read()
       chapterList = json.loads(content)
       chapterNum = len(chapterList)
-      startDire = 1
-      while startDire <= 1:
+      startDire = 120
+      while startDire <= chapterNum:
         startDownChapter = chapterList[startDire-1]
         create_fold(str(startDire))
         get_img_address_html(str(startDire),str(startDownChapter))
