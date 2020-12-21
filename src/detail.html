@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="./reset.css">
+  <style>
+    body {background-color: #212121}
+    .img-container {
+      margin: 0 auto;
+      width: 50%;
+      overflow: hidden;
+    }
+
+    .img-container img {
+      width: 100%;
+    }
+
+    .bottom-tool {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 60px;
+      text-align: center;
+      z-index: 100;
+      background-color: rgba(0,0,0,.9);
+      opacity: 0;
+      transition: all 0.6s;
+    }
+
+    .bottom-tool:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div id='imgList' class="img-container">
+    </div>
+    <div class="bottom-tool">
+      <button id='nextPage'>下一页</button>
+      <button id='comicIndex'>目录</button>
+      <button id='nextChapter'>下一话</button>
+    </div>
+  </div>
+  <script>
+    function getQueryStringArgs(params) {
+      var qs = (location.search.length > 0 ? location.search.substring(1) : ""),
+        args = {},
+        items = qs.length ? qs.split("&") : [],
+        item = null,
+        name = null,
+        value = null,
+        i = 0,
+        len = items.length;
+      for (i = 0; i < len; i++) {
+        item = items[i].split("=");
+        name = decodeURIComponent(item[0]);
+        value = decodeURIComponent(item[1]);
+        if (name.length) {
+          args[name] = value;
+        }
+      }
+      return args[params];
+    }
+
+    function createImage() {
+      const imageNum = localStorage.getItem('imageNum', '');
+      const num = imageNum ? imageNum : 1;
+      localStorage.setItem('imageNum', Number(num)+1);
+      const imgEle = document.createElement('img');
+      const chapter = getQueryStringArgs('chapter');
+      const imgType = '.webp';
+      imgEle.src = `../comic//${chapter}/${num}${imgType}`
+      imgEle.onerror = function() {
+        alert(`../comic//${chapter}/${num}${imgType} failed`)
+      }
+      return imgEle;
+    }
+
+    function initEvent(container) {
+      const nextPage = document.querySelector('#nextPage');
+      nextPage.addEventListener('click',function(){
+        const img = createImage()
+        container.append(img)
+      })
+      const comicIndex = document.querySelector('#comicIndex');
+      comicIndex.addEventListener('click',function(){
+        window.location.href = `${window.location.origin}/src/index.html`
+      })
+
+      const nextChapter = document.querySelector('#nextChapter');
+      nextChapter.addEventListener('click',function(){
+        const chapter = getQueryStringArgs('chapter');
+        const nextNum = Number(chapter) + 1;
+        window.location.href = `${window.location.origin}/src/detail.html?chapter=${nextNum}`
+      })
+    }
+
+    function init() {
+      const container = document.querySelector('#imgList');
+      container.innerHTML = '';
+      localStorage.setItem('imageNum', '');
+      setTimeoutMark = null
+
+      const img = createImage()
+      container.append(img)
+      initEvent(container);
+      window.onscroll = function() {
+        clearTimeout(setTimeoutMark)
+        setTimeoutMark = setTimeout(() => {
+          let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          let clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
+          let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+          if(scrollHeight > clientHeight && scrollTop + clientHeight === scrollHeight) {
+            const img = createImage()
+            container.append(img)
+          }
+        },100)
+
+      }
+    }
+
+
+
+
+    init();
+
+
+
+
+  </script>
+</body>
+</html>
