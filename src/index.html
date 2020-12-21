@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="./reset.css">
+  <style>
+    html,body {background-color: #fafafa}
+    .tc {
+      text-align: center
+    }
+    .list {
+      display: flex;
+      flex-flow: row wrap;
+      margin: 20px;
+    }
+    .list-item {
+      display: block;
+      width: 100px;
+      color: rgba(0,0,0,.87);
+    }
+    .list-item:hover {
+      color: rgba(0,0,0,.87);
+      background-color: #edfaff;
+    }
+  </style>
+</head>
+<body>
+  <h2 class="tc"></h2>
+  <ul id='chapterList' class="list">
+
+  </ul>
+  <script>
+  fetch('../comic//chapter.json').then((res) => {
+    return res.json();
+  }).then(function(data) {
+    const dataLen = data.length;
+    let htmStr = '';
+    for (let index = 1; index <= dataLen; index++) {
+      let liItem = `<li><a class="list-item" href='./detail.html?chapter=${index}'>${index}</a></li>`;
+      htmStr = htmStr + liItem;
+    }
+    document.querySelector('#chapterList').innerHTML = htmStr;
+  });
+  </script>
+</body>
+</html>
