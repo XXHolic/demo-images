@@ -14,7 +14,9 @@ imgType = '.png'
 comicMark = '15403'
 reqList="https://www.manhuaniu.com/manhua/" + comicMark + "/"
 chapterFile = baseRoot + 'chapter.json'
-preChapterFile = '../comic/jinJiDeJuRenQianZhuan/chapter.json'
+imagesJsonFileName = 'images.json'
+emptyJsonFileName = 'empty.json'
+preChapterFile = '../comic//chapter.json'
 
 chapterListHeaders = {
   "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -63,26 +65,22 @@ imgHeader = {
   "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
 }
 
-
-
-def create_fold(foldName):
-  name = urllib.parse.unquote(foldName)
-  utils.mkdir(baseRoot+name)
-  return
-
 # 下载图片
 def down_img(localFold,data,isDirect):
   img_index = 0
   img_len = len(data)
   while img_index < img_len:
     img_item = data[img_index]
+    if (not img_item):
+      img_index += 1
+      continue
     fold_name = urllib.parse.unquote(localFold) + '/'
     img_item_arr = img_item.split('/')
     img_arr_len = len(img_item_arr)
     img_item_arr_last = img_item_arr[img_arr_len-1]
     imgCount = img_index+1
     if (isDirect):
-      filename = baseRoot +fold_name+ img_item_arr_last
+      filename = baseRoot +fold_name + str(imgCount) + utils.getImageType(img_item)
     else:
       img_item_spot_arr = img_item_arr_last.split('.')
       img_item_spot_len = len(img_item_spot_arr)
@@ -104,27 +102,9 @@ def down_img(localFold,data,isDirect):
     img_index += 1
   return
 
-# 获取图片下载的地址，这种适用于图片后缀有规律递增的情况
-def get_img_address_direct(localFold,downChapter):
-  page_num = 0
-  img_list=[]
-  while page_num <= maxPageNum:
-    num_format = ""
-    if page_num<10:
-      num_format = str(page_num)
-    if (page_num >= 10 and page_num < 100):
-      num_format = str(page_num)
-    if (page_num >= 100):
-      num_format = str(page_num)
-    filename = reqList + downChapter + "/" + num_format + fileType
-    img_list.append(filename)
-    page_num += 1
-  # print(img_list)
-  down_img(localFold,img_list,1)
-  return
-
-
-# 获取图片下载的地址，这种适用图片地址无法看出规律，需要先请求 HTML网页，返回网页里面会包含图片得地址
+# 获取图片下载的地址，这种适用图片地址无法看出规律，
+# 需要先请求 HTML 网页，返回网页里面会包含图片得地址
+# 同一章节的所有图片地址在一个页面上
 def get_img_address_html(localFold,downChapter):
   page_num = 1
   img_list=[]
@@ -163,26 +143,117 @@ def get_img_address_html(localFold,downChapter):
   down_img(localFold,img_list,0)
   return
 
+# 获取图片下载的地址，这种适用图片地址无法看出规律，
+# 需要先请求 HTML网页，返回网页里面会包含图片得地址
+# 每一张图片要请求一次 html，这种形式的要把数据先存放到本地
+def get_every_img_address_html(localFold,downChapter):
+  # 漫画网站本来应该有，但返回了空的数据
+  emptyImageList = []
+  img_list=[]
+  fold_name = urllib.parse.unquote(localFold) + '/'
+  imgListFile = baseRoot+fold_name+ imagesJsonFileName
+  emptyFile = baseRoot+fold_name+ emptyJsonFileName
+  emptyRecord = []
+  if (os.path.exists(emptyFile)):
+    with open(emptyFile, "r",encoding="utf-8") as f:
+        content = f.read()
+        if (content):
+          emptyRecord = json.loads(content)
+  imageExistList = []
+  if (os.path.exists(imgListFile)):
+    with open(imgListFile, "r",encoding="utf-8") as f:
+        content = f.read()
+        if (content):
+          imageExistList = json.loads(content)
+  page_num = len(imageExistList) + 1
+  while page_num <= maxPageNum:
+  # while page_num <= 1:
+    num_format = str(page_num)
+    filename = reqList + downChapter + "_p"+ num_format + fileType
+    res = requests.get(filename,headers=chapterHeaders)
+    titleText = 'not found'
+    if (res.status_code == 200):
 
-# 获取章节数据
-def getChapterList():
-  reqUrl = 'https://www.manhuaniu.com/manhua/'+ comicMark +'/'
+      pattern = re.compile(r'<img class="img-fluid show-pic"+.*?\/>')
+      result = pattern.findall(res.text)
+      titlePattern = re.compile(r'<title>+.*?<\/title>')
+      titleResult = titlePattern.findall(res.text)
+      # 可以从页面中拿到总页数
+      totalPattern = re.compile(r'data-total="+.*?"')
+      totalResult = totalPattern.findall(res.text)
+      # print('result',totalResult)
+      # return
+
+        # print('img_list',img_list)
+      if (len(titleResult)):
+        titleText = titleResult[0]
+      if (len(totalResult)):
+        totalCount = utils.getQuoteNumValue(totalResult[0])
+        if (totalCount != maxPageNum):
+          global maxPageNum
+          maxPageNum = totalCount
+      if (len(result)):
+        print('get chapter '+ localFold +' image '+str(page_num) + ' url success')
+        imgSrcValue = utils.getImgSrc(result[0])
+        img_list.append(imgSrcValue)
+      else:
+          print('get chapter '+ localFold +' image ' + str(page_num) + ' empty')
+          # 放一个占位符，这样生成图片顺序就保持一致，也好知道那里出问题了
+          img_list.append('')
+          if (emptyRecord.count(page_num) == 0):
+            emptyImageList.append(page_num)
+      page_num += 1
+    else:
+      # 没有正确响应，认定没有接下来的图片了，就跳出循环，把获取成功的数据保存
+      print('get chapter '+ localFold +' image ' + str(page_num) + ' error')
+      page_num = maxPageNum
+  # print(img_list)
+  imageExistList.extend(img_list)
+  emptyRecord.extend(emptyImageList)
+  name = "title.md"
+  dataFilename = baseRoot+fold_name+ name
+  with open(dataFilename, "w+",encoding="utf-8") as f:
+      f.write(titleText)
+      f.close()
+
+  with open(imgListFile, "wb") as f:
+      resultStr = json.dumps(imageExistList)
+      # print(resultStr)
+      f.write(resultStr.encode(encoding='UTF-8'))
+      f.close()
+  with open(emptyFile, "wb") as f:
+      resultStr = json.dumps(emptyRecord)
+      # print(resultStr)
+      f.write(resultStr.encode(encoding='UTF-8'))
+      f.close()
+  # down_img(localFold,img_list,0)
+  return
+
+
+# 获取章节数据，并存放到本地
+def getChaptersData():
+  reqUrl = 'https://www.com/manhua/'+ comicMark +'/'
   res = requests.get(reqUrl,headers=chapterListHeaders)
   # print(res.status_code)
   if (res.status_code == 200):
-    pattern = re.compile(r'href="/manhua/15403/+.*?html" class="active"')
-    result = pattern.findall(res.text)
+    pattern = re.compile(r'<ol class="links-of-books num_div"+.*?>([\s\S]*?)</ol*?>')
+    versionResult = pattern.findall(res.text)
+    # 可能有多个版本，例如黑白和彩色，所以这里需要再处理一次
+    pattern2 = re.compile(r'href="/manhua/119/+.*?html"')
+    result = pattern2.findall(versionResult[2])
     # 前传
     qianZhuan = []
     # 正传
     zhengZhuan = []
+    # print(len(result))
     # print(result)
+    # return
     if (len(result)):
       for index,value in enumerate(result):
         valueSplit1 = value.split('.')
         valueSplit2 = valueSplit1[0].split('/')
         valueSplit2Len = len(valueSplit2)
-        chapterLink = int(valueSplit2[valueSplit2Len-1])
+        chapterLink = valueSplit2[valueSplit2Len-1]
         # if(chapterLink >= 355906 and chapterLink <= 355971 ):
         #   qianZhuan.append(chapterLink)
         # else:
@@ -205,41 +276,45 @@ def getChapterList():
     print('get chapter failed')
   return
 
+# 单独获取图片并存放到本地 json 文件
+def getImagesData():
+  with open(chapterFile, "r",encoding="utf-8") as f:
+    content = f.read()
+    chapterList = json.loads(content)
+    chapterNum = len(chapterList)
+    startDire = 1
+    while startDire <= chapterNum:
+      startDownChapter = chapterList[startDire-1]
+      utils.createFold(baseRoot, str(startDire))
+      get_every_img_address_html(str(startDire),str(startDownChapter))
+      startDire += 1
+  return
 
-# 清理下载失败的文件
-def clear_file(chapter):
-  fold_name = urllib.parse.unquote(chapter) + '/'
-  list = utils.getFileList(baseRoot +fold_name,[])
-  img_index = 0
-  img_len = len(list)
-  while img_index < img_len:
-    filePath = list[img_index]
-    if(os.path.exists(filePath)):
-      fsize = os.path.getsize(filePath)
-      if ( fsize/1024 < 1):
-        os.remove(filePath)
-    img_index += 1
+# 根据本地图片 json 文件区请求相应图片，并保存到本地
+def downAllImages():
+  with open(chapterFile, "r",encoding="utf-8") as f:
+    content = f.read()
+    chapterList = json.loads(content)
+    chapterNum = len(chapterList)
+    startDire = 1
+    while startDire <= chapterNum:
+      fold_name = urllib.parse.unquote(str(startDire)) + '/'
+      imgListFile = baseRoot + fold_name + imagesJsonFileName
+      with open(imgListFile, "r",encoding="utf-8") as f:
+        imgContent = f.read()
+        imgList = json.loads(imgContent)
+        down_img(str(startDire),imgList,1)
+      startDire += 1
   return
 
 def main():
-  # getChapterList()
-  # return
-  # preChapterFile
-  with open(chapterFile, "r",encoding="utf-8") as f:
-      content = f.read()
-      chapterList = json.loads(content)
-      chapterNum = len(chapterList)
-      startDire = 1
-      while startDire <= chapterNum:
-        startDownChapter = chapterList[startDire-1]
-        create_fold(str(startDire))
-        get_img_address_html(str(startDire),str(startDownChapter))
-        startDire += 1
+  # getChaptersData()
+  # getImagesData()
+  # downAllImages()
   return
+
 
 # 主程序
 main()
-# clear_file() // 这个建议最后单独执行
-
 
 print('all done')
