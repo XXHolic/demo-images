@@ -47,10 +47,15 @@ def getImgSrc(data):
   url_split = url.split('"')
   return url_split[1]
 
+# 从 'data-total="265"' 这样的数据中提取出引号内的数字值
+def getQuoteNumValue(data):
+  url_split = data.split('"')
+  return int(url_split[1])
+
 
 # 从 <h2>some content</h2> 这样的标签中提取出 some content
-# def getHtmlLabelContent(data): 无效，先放这里
-#   searchObj = re.match(r'<[a-zA-Z]+.*?>([\s\S]*?)<\/[a-zA-Z]+.*?>', data)
+# def getHtmlLabelContent(data): 这个标签正则提取成功
+#   searchObj = re.match(r'<ol class="links-of-books num_div"+.*?>([\s\S]*?)</ol*?>', data)
 #   content = ''
 #   if (searchObj):
 #     content = searchObj.group()
