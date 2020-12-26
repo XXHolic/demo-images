@@ -47,6 +47,7 @@
     </div>
   </div>
   <script>
+    const prefix = '../comic/name'
     function getQueryStringArgs(params) {
       var qs = (location.search.length > 0 ? location.search.substring(1) : ""),
         args = {},
@@ -74,9 +75,9 @@
       const imgEle = document.createElement('img');
       const chapter = getQueryStringArgs('chapter');
       const imgType = '.webp';
-      imgEle.src = `../comic//${chapter}/${num}${imgType}`
+      imgEle.src = `${prefix}/${chapter}/${num}${imgType}`
       imgEle.onerror = function() {
-        alert(`../comic//${chapter}/${num}${imgType} failed`)
+        alert(`${prefix}/${chapter}/${num}${imgType} failed`)
       }
       return imgEle;
     }

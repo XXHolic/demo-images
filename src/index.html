@@ -28,12 +28,13 @@
   </style>
 </head>
 <body>
-  <h2 class="tc"></h2>
+  <h2 class="tc">name</h2>
   <ul id='chapterList' class="list">
 
   </ul>
   <script>
-  fetch('../comic//chapter.json').then((res) => {
+    const url = '../comic/name/chapter.json'
+  fetch(url).then((res) => {
     return res.json();
   }).then(function(data) {
     const dataLen = data.length;
