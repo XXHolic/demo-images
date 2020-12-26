@@ -68,12 +68,6 @@ imgHeader = {
   "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
 }
 
-
-def create_fold(foldName):
-  name = urllib.parse.unquote(foldName)
-  utils.mkdir(baseRoot+name)
-  return
-
 # 下载图片
 def down_img(localFold,data,isDirect):
   img_index = 0
@@ -294,7 +288,7 @@ def getImagesData():
     startDire = 1
     while startDire <= chapterNum:
       startDownChapter = chapterList[startDire-1]
-      create_fold(str(startDire))
+      utils.createFold(baseRoot, str(startDire))
       get_every_img_address_html(str(startDire),str(startDownChapter))
       startDire += 1
   return

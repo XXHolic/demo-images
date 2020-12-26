@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import os
 import re
+import urllib.parse
 
 def mkdir(path):
   folder = os.path.exists(path)
@@ -62,3 +63,9 @@ def getImageType(data):
   urlSplitLen = len(urlSplit)
   type = '.' + urlSplit[urlSplitLen-1]
   return type
+
+# 创建文件夹
+def createFold(baseRoot, foldName):
+  name = urllib.parse.unquote(foldName)
+  mkdir(baseRoot+name)
+  return
