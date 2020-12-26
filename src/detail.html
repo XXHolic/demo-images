@@ -47,6 +47,7 @@
     </div>
   </div>
   <script>
+    const prefix = '../comic/yueDingDeMengHuanDao'
     function getQueryStringArgs(params) {
       var qs = (location.search.length > 0 ? location.search.substring(1) : ""),
         args = {},
@@ -73,10 +74,10 @@
       localStorage.setItem('imageNum', Number(num)+1);
       const imgEle = document.createElement('img');
       const chapter = getQueryStringArgs('chapter');
-      const imgType = '.webp';
-      imgEle.src = `../comic//${chapter}/${num}${imgType}`
+      const imgType = '..png';
+      imgEle.src = `${prefix}/${chapter}/${num}${imgType}`
       imgEle.onerror = function() {
-        alert(`../comic//${chapter}/${num}${imgType} failed`)
+        alert(`${prefix}/${chapter}/${num}${imgType} failed`)
       }
       return imgEle;
     }
