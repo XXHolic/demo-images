@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="./reset.css">
   <style>
     html,body {background-color: #fafafa}
+    .df {
+      display: flex;
+    }
     .tc {
       text-align: center
     }
@@ -32,19 +35,31 @@
   <ul id='chapterList' class="list">
 
   </ul>
+  <div id='viewHistory' class="df"></div>
   <script>
-    const url = '../comic/name/chapter.json'
-  fetch(url).then((res) => {
-    return res.json();
-  }).then(function(data) {
-    const dataLen = data.length;
-    let htmStr = '';
-    for (let index = 1; index <= dataLen; index++) {
-      let liItem = `<li><a class="list-item" href='./detail.html?chapter=${index}'>${index}</a></li>`;
-      htmStr = htmStr + liItem;
+    const comicName = ''
+    function getChapterList() {
+      fetch(`../comic/${comicName}/chapter.json`).then((res) => {
+        return res.json();
+      }).then(function(data) {
+        const dataLen = data.length;
+        let htmStr = '';
+        for (let index = 1; index <= dataLen; index++) {
+          let liItem = `<li><a class="list-item" href='./detail.html?chapter=${index}'>${index}</a></li>`;
+          htmStr = htmStr + liItem;
+        }
+        document.querySelector('#chapterList').innerHTML = htmStr;
+      });
     }
-    document.querySelector('#chapterList').innerHTML = htmStr;
-  });
+
+    function init() {
+      const viewHistory = localStorage.getItem(comicName) || 1;
+      document.querySelector('#viewHistory').innerHTML = `上次看到: <a class="list-item" href='./detail.html?chapter=${viewHistory}'>${viewHistory}</a>`;
+      getChapterList()
+
+    }
+
+    init();
   </script>
 </body>
 </html>

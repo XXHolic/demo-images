@@ -47,7 +47,11 @@
     </div>
   </div>
   <script>
-    const prefix = '../comic/name'
+    const comicName = ''
+    const prefix = `../comic/${comicName}`
+    const chapter = getQueryStringArgs('chapter');
+    const imgType = '..png';
+
     function getQueryStringArgs(params) {
       var qs = (location.search.length > 0 ? location.search.substring(1) : ""),
         args = {},
@@ -69,12 +73,10 @@
     }
 
     function createImage() {
-      const imageNum = localStorage.getItem('imageNum', '');
+      const imageNum = localStorage.getItem('imageNum');
       const num = imageNum ? imageNum : 1;
       localStorage.setItem('imageNum', Number(num)+1);
       const imgEle = document.createElement('img');
-      const chapter = getQueryStringArgs('chapter');
-      const imgType = '.webp';
       imgEle.src = `${prefix}/${chapter}/${num}${imgType}`
       imgEle.onerror = function() {
         alert(`${prefix}/${chapter}/${num}${imgType} failed`)
@@ -106,6 +108,9 @@
       container.innerHTML = '';
       localStorage.setItem('imageNum', '');
       setTimeoutMark = null
+
+      // 记录看到的章节历史
+      localStorage.setItem(comicName,chapter);
 
       const img = createImage()
       container.append(img)
