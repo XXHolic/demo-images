@@ -89,7 +89,7 @@ def down_img(localFold,data,isDirect):
     img_item_arr_last = img_item_arr[img_arr_len-1]
     imgCount = img_index+1
     if (isDirect):
-      filename = baseRoot +fold_name+ img_item_arr_last
+      filename = baseRoot +fold_name+ str(imgCount) +utils.getImageType(img_item)
     else:
       img_item_spot_arr = img_item_arr_last.split('.')
       img_item_spot_len = len(img_item_spot_arr)
@@ -111,28 +111,10 @@ def down_img(localFold,data,isDirect):
     img_index += 1
   return
 
-# 获取图片下载的地址，这种适用于图片后缀有规律递增的情况
-def get_img_address_direct(localFold,downChapter):
-  page_num = 0
-  img_list=[]
-  while page_num <= maxPageNum:
-    num_format = ""
-    if page_num<10:
-      num_format = str(page_num)
-    if (page_num >= 10 and page_num < 100):
-      num_format = str(page_num)
-    if (page_num >= 100):
-      num_format = str(page_num)
-    filename = reqList + downChapter + "/" + num_format + fileType
-    img_list.append(filename)
-    page_num += 1
-  # print(img_list)
-  down_img(localFold,img_list,1)
-  return
 
-
-# 获取图片下载的地址，这种适用图片地址无法看出规律，需要先请求 HTML网页，返回网页里面会包含图片得地址
-# 同一章节的所有图片地址存在一个页面上
+# 获取图片下载的地址，这种适用图片地址无法看出规律，
+# 需要先请求 HTML 网页，返回网页里面会包含图片得地址
+# 同一章节的所有图片地址在一个页面上
 def get_img_address_html(localFold,downChapter):
   page_num = 1
   img_list=[]
@@ -171,8 +153,9 @@ def get_img_address_html(localFold,downChapter):
   down_img(localFold,img_list,0)
   return
 
-# 获取图片下载的地址，这种适用图片地址无法看出规律，需要先请求 HTML网页，返回网页里面会包含图片得地址
-# 每一张图片要请求一次 html
+# 获取图片下载的地址，这种适用图片地址无法看出规律，
+# 需要先请求 HTML网页，返回网页里面会包含图片得地址
+# 每一张图片要请求一次 html，这种形式的要把数据先存放到本地
 def get_every_img_address_html(localFold,downChapter):
   # 漫画网站本来应该有，但返回了空的数据
   emptyImageList = []
@@ -256,7 +239,7 @@ def get_every_img_address_html(localFold,downChapter):
   # down_img(localFold,img_list,0)
   return
 
-# 获取章节数据
+# 获取章节数据，并存放到本地
 def getChaptersData():
   reqUrl = 'https://www.manhuadb.com/manhua/'+ comicMark +'/'
   res = requests.get(reqUrl,headers=chapterListHeaders)
@@ -302,22 +285,7 @@ def getChaptersData():
     print('get chapter failed')
   return
 
-
-# 清理下载失败的文件
-def clear_file(chapter):
-  fold_name = urllib.parse.unquote(chapter) + '/'
-  list = utils.getFileList(baseRoot +fold_name,[])
-  img_index = 0
-  img_len = len(list)
-  while img_index < img_len:
-    filePath = list[img_index]
-    if(os.path.exists(filePath)):
-      fsize = os.path.getsize(filePath)
-      if ( fsize/1024 < 1):
-        os.remove(filePath)
-    img_index += 1
-  return
-
+# 单独获取图片并存放到本地 json 文件
 def getImagesData():
   with open(chapterFile, "r",encoding="utf-8") as f:
     content = f.read()
@@ -331,6 +299,7 @@ def getImagesData():
       startDire += 1
   return
 
+# 根据本地图片 json 文件区请求相应图片，并保存到本地
 def downAllImages():
   with open(chapterFile, "r",encoding="utf-8") as f:
     content = f.read()
@@ -356,7 +325,5 @@ def main():
 
 # 主程序
 main()
-# clear_file() // 这个建议最后单独执行
-
 
 print('all done')
