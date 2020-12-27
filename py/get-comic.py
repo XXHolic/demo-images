@@ -5,14 +5,14 @@ import re
 import os
 import urllib.parse
 import utils
-
-baseRoot= '../comic//'
-# baseRoot= '../comic//'
-maxPageNum = 200
+#  获取源 https://www.manhuadb.com/
+# baseRoot= '../comic/shiZhiHai-Color/'
+baseRoot= '../comic/shiZhiHai-Single/'
+maxPageNum = 300
 fileType = ".html"
 imgType = '.png'
-comicMark = '15403'
-reqList="https://www.manhuaniu.com/manhua/" + comicMark + "/"
+comicMark = '139'
+reqList="https://www.manhuadb.com/manhua/" + comicMark + "/"
 chapterFile = baseRoot + 'chapter.json'
 imagesJsonFileName = 'images.json'
 emptyJsonFileName = 'empty.json'
@@ -21,13 +21,13 @@ preChapterFile = '../comic//chapter.json'
 chapterListHeaders = {
   "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
   "accept-encoding":"gzip, deflate, br",
-  "accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
+  "accept-language":"zh-CN,zh;q=0.9",
   "cache-control":"no-cache",
-  "cookie":"UM_distinctid=174a991ad1a26c-0afb998ad92617-3323767-1fa400-174a991ad1b5a8; __gads=ID=289a30228745382c-22cecc6d28c500f5:T=1607699470:RT=1607699470:R:S=ALNI_MbODWxVquBiHUrh8moe6CHup0kNMA; CNZZDATA1278325662=1030922568-1600569125-https%253A%252F%252Fcn.bing.com%252F%7C1608114925",
+  "cookie":"__cfduid=d7ef3289ebf61d9416ee0f8dc4495c02d1608972507; _ga=GA1.2.945506577.1608972509; _gid=GA1.2.127522826.1608972509; Hm_lvt_b09a6e73b4faec9edd5935dc45604b5b=1608972509,1609042566,1609056406; PHPSESSID=atau16jq8qa8a26v31q8r7ifdn; Hm_lpvt_b09a6e73b4faec9edd5935dc45604b5b=1609068836; _gat_gtag_UA_99000019_2=1",
   "pragma":"no-cache",
   "sec-fetch-dest":"document",
   "sec-fetch-mode":"navigate",
-  "sec-fetch-site":"none",
+  "sec-fetch-site":"same-origin",
   "Sec-Fetch-User":"?1",
   "Upgrade-Insecure-Requests":"1",
   "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
@@ -36,10 +36,10 @@ chapterListHeaders = {
 chapterHeaders = {
   "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
   "accept-encoding":"gzip, deflate, br",
-  "accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
+  "accept-language":"zh-CN,zh;q=0.9",
   "cache-control":"no-cache",
-  "cookie":"UM_distinctid=174a991ad1a26c-0afb998ad92617-3323767-1fa400-174a991ad1b5a8; __gads=ID=289a30228745382c-22cecc6d28c500f5:T=1607699470:RT=1607699470:R:S=ALNI_MbODWxVquBiHUrh8moe6CHup0kNMA; CNZZDATA1278325662=1030922568-1600569125-https%253A%252F%252Fcn.bing.com%252F%7C1608114925",
-  "Host":"www.manhuaniu.com",
+  "cookie":"__cfduid=d7ef3289ebf61d9416ee0f8dc4495c02d1608972507; _ga=GA1.2.945506577.1608972509; _gid=GA1.2.127522826.1608972509; Hm_lvt_b09a6e73b4faec9edd5935dc45604b5b=1608972509,1609042566,1609056406; PHPSESSID=atau16jq8qa8a26v31q8r7ifdn; _gat_gtag_UA_99000019_2=1; Hm_lpvt_b09a6e73b4faec9edd5935dc45604b5b=1609069601",
+  "Host":"www.manhuadb.com",
   "pragma":"no-cache",
   "referer":reqList,
   "sec-fetch-dest":"document",
@@ -51,17 +51,18 @@ chapterHeaders = {
 }
 
 imgHeader = {
-  "authority":"res.asemi.tech",
+  "authority":"i1.manhuadb.com",
   "scheme":"https",
   "accept":"image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
   "accept-encoding":"gzip, deflate, br",
-  "accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
+  "accept-language":"zh-CN,zh;q=0.9",
   "cache-control":"no-cache",
   "pragma":"no-cache",
-  "referer":"https://www.manhuaniu.com/",
+  "referer":"https://www.manhuadb.com/",
+  "cookie":"__cfduid=d7ef3289ebf61d9416ee0f8dc4495c02d1608972507; _ga=GA1.2.945506577.1608972509; _gid=GA1.2.127522826.1608972509; Hm_lvt_b09a6e73b4faec9edd5935dc45604b5b=1608972509,1609042566,1609056406; _gat_gtag_UA_99000019_2=1; Hm_lpvt_b09a6e73b4faec9edd5935dc45604b5b=1609069601",
   "sec-fetch-dest":"image",
   "sec-fetch-mode":"no-cors",
-  "sec-fetch-site":"cross-site",
+  "sec-fetch-site":"same-site",
   "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
 }
 
@@ -232,15 +233,15 @@ def get_every_img_address_html(localFold,downChapter):
 
 # 获取章节数据，并存放到本地
 def getChaptersData():
-  reqUrl = 'https://www.com/manhua/'+ comicMark +'/'
+  reqUrl = 'https://www.manhuadb.com/manhua/'+ comicMark +'/'
   res = requests.get(reqUrl,headers=chapterListHeaders)
   # print(res.status_code)
   if (res.status_code == 200):
     pattern = re.compile(r'<ol class="links-of-books num_div"+.*?>([\s\S]*?)</ol*?>')
     versionResult = pattern.findall(res.text)
     # 可能有多个版本，例如黑白和彩色，所以这里需要再处理一次
-    pattern2 = re.compile(r'href="/manhua/119/+.*?html"')
-    result = pattern2.findall(versionResult[2])
+    pattern2 = re.compile(r'href="/manhua/139/+.*?html"')
+    result = pattern2.findall(versionResult[1])
     # 前传
     qianZhuan = []
     # 正传
@@ -309,7 +310,7 @@ def downAllImages():
 
 def main():
   # getChaptersData()
-  # getImagesData()
+  getImagesData()
   # downAllImages()
   return
 
