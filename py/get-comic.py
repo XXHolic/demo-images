@@ -7,9 +7,9 @@ import urllib.parse
 import utils
 
 # 获取源 https://www.manhuadb.com/
-baseRoot= '../comic/xinChenDouShi-Box/'
+# baseRoot= '../comic/xinChenDouShi-Box/'
 # baseRoot= '../comic/xinChenDouShi-Color/'
-# baseRoot= '../comic/xinChenDouShi-Single/'
+baseRoot= '../comic/xinChenDouShi-Single/'
 maxPageNum = 300
 fileType = ".html"
 imgType = '.png'
