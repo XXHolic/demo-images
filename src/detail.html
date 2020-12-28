@@ -23,7 +23,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      height: 60px;
+      /* height: 60px; */
       text-align: center;
       z-index: 100;
       background-color: rgba(0,0,0,.9);
@@ -34,13 +34,56 @@
     .bottom-tool:hover {
       opacity: 1;
     }
+<<<<<<< HEAD
+=======
+    .trigger-tool {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 50%;
+      z-index: 50;
+    }
+    .chapter-tip {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      padding: 0 6px;
+      font-size: 12px;
+      color: #fff;
+      background-color: rgba(0, 0, 0, .5);
+    }
+    .wrap-img {
+      min-height: 500px
+    }
+    .top-tool {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 100;
+      right: 0;
+      opacity: 0;
+      text-align: center;
+      background-color: rgba(0, 0, 0, 1);
+    }
+>>>>>>> abfcd45 (feat: add local data view)
   </style>
 </head>
 <body>
   <div>
+    <div class="top-tool" id='topTool'>
+      <span style="color: #fff">页码</span>
+      <input id="jumpNum">
+      <button id='jump'>跳转</button>
+    </div>
     <div id='imgList' class="img-container">
     </div>
+<<<<<<< HEAD
     <div class="bottom-tool">
+=======
+    <div class="chapter-tip">chapter <span id="chapterNum">0</span> <span id="curNum">0</span>/<span id="allNum">0</span></div>
+    <div class="bottom-tool" id='bottomTool'>
+>>>>>>> abfcd45 (feat: add local data view)
       <button id='nextPage'>下一页</button>
       <button id='comicIndex'>目录</button>
       <button id='nextChapter'>下一话</button>
@@ -49,8 +92,32 @@
   <script>
     const comicName = ''
     const prefix = `../comic/${comicName}`
+    const curNum = document.querySelector('#curNum');
+    const container = document.querySelector('#imgList');
     const chapter = getQueryStringArgs('chapter');
+<<<<<<< HEAD
     const imgType = '..png';
+=======
+    const imgType = '.jpg';
+    let totalImages = [];
+
+    function getDeviceType() {
+      var userAgent = navigator.userAgent.toLowerCase();
+      var isIpad = userAgent.match(/ipad/i) == "ipad";
+      var isIphoneOs = userAgent.match(/iphone os/i) == "iphone os";
+      var isMidp = userAgent.match(/midp/i) == "midp";
+      var isUc7 = userAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+      var isUc = userAgent.match(/ucweb/i) == "ucweb";
+      var isAndroid = userAgent.match(/android/i) == "android";
+      var isCE = userAgent.match(/windows ce/i) == "windows ce";
+      var isWM = userAgent.match(/windows mobile/i) == "windows mobile";
+      if (isIpad || isIphoneOs || isMidp || isUc7 || isUc || isAndroid || isCE || isWM) {
+          return "phone";
+      } else {
+          return "pc";
+      }
+    }
+>>>>>>> abfcd45 (feat: add local data view)
 
     function getQueryStringArgs(params) {
       var qs = (location.search.length > 0 ? location.search.substring(1) : ""),
@@ -72,35 +139,128 @@
       return args[params];
     }
 
-    function createImage() {
+    function createImage(numArgs) {
       const imageNum = localStorage.getItem('imageNum');
-      const num = imageNum ? imageNum : 1;
-      localStorage.setItem('imageNum', Number(num)+1);
-      const imgEle = document.createElement('img');
-      imgEle.src = `${prefix}/${chapter}/${num}${imgType}`
-      imgEle.onerror = function() {
-        alert(`${prefix}/${chapter}/${num}${imgType} failed`)
+      let num = imageNum ? imageNum : 1;
+      if (num > totalImages.length) {
+        return;
       }
-      return imgEle;
+      if (numArgs) {
+        num = numArgs
+        localStorage.setItem('imageNum', numArgs);
+      }
+      const imgWrap = document.createElement('div')
+      imgWrap.setAttribute('class','wrap-img')
+      const imgEle = document.createElement('img');
+      const srcUrl = `${prefix}/${chapter}/${num}${imgType}`
+      imgEle.setAttribute('data-src',srcUrl)
+      imgEle.setAttribute('data-loaded',0)
+      imgEle.setAttribute('class','comic-img')
+      imgEle.onerror = function() {
+        imgEle.src = '../404/3.jpg'
+      }
+      imgEle.onload = function() {
+        imgEle.setAttribute('data-loaded',1)
+        const newNum = Number(num)+1
+        const imageNumAgain = localStorage.getItem('imageNum');
+        // 加载图片顺序可能不一致，只记录最大的
+        if (newNum > imageNumAgain) {
+          localStorage.setItem('imageNum', newNum);
+        }
+        curNum.innerHTML = num
+        const img = createImage()
+        container.append(img)
+      }
+      imgWrap.appendChild(imgEle)
+      return imgWrap;
     }
 
     function initEvent(container) {
+<<<<<<< HEAD
+=======
+      const bottomTool = document.querySelector('#bottomTool');
+      const topTool = document.querySelector('#topTool');
+
+>>>>>>> abfcd45 (feat: add local data view)
       const nextPage = document.querySelector('#nextPage');
       nextPage.addEventListener('click',function(){
         const img = createImage()
         container.append(img)
+        bottomTool.style.opacity = 0;
+        topTool.style.opacity = 0;
       })
       const comicIndex = document.querySelector('#comicIndex');
       comicIndex.addEventListener('click',function(){
-        window.location.href = `${window.location.origin}/src/index.html`
+        window.location.href = `./index.html`
       })
 
       const nextChapter = document.querySelector('#nextChapter');
       nextChapter.addEventListener('click',function(){
         const chapter = getQueryStringArgs('chapter');
         const nextNum = Number(chapter) + 1;
-        window.location.href = `${window.location.origin}/src/detail.html?chapter=${nextNum}`
+        window.location.href = `./detail.html?chapter=${nextNum}`
       })
+<<<<<<< HEAD
+=======
+
+      const jump = document.querySelector('#jump');
+      const jumpNumEle = document.querySelector('#jumpNum');
+      jump.addEventListener('click',function(){
+        const jumpNum = jumpNumEle.value;
+        container.innerHTML = ''
+        const img = createImage(Number(jumpNum))
+        container.append(img)
+        loadImageDataFirst()
+      })
+
+
+      const triggerTool = document.querySelector('#triggerTool');
+      triggerTool.addEventListener('click',function(){
+        if (bottomTool.style.opacity == '1') {
+          bottomTool.style.opacity = 0;
+          topTool.style.opacity = 0;
+        } else {
+          bottomTool.style.opacity = 1;
+          topTool.style.opacity = 1;
+        }
+      })
+    }
+
+    function setChapterTip(container) {
+      const imageNum = localStorage.getItem('imageNum');
+      const chapterNum = document.querySelector('#chapterNum');
+
+      const allNum = document.querySelector('#allNum');
+
+      chapterNum.innerHTML = chapter
+      curNum.innerHTML = imageNum
+
+      fetch(`../comic/${comicName}/${chapter}/images.json`).then((res) => {
+        return res.json();
+      }).then(function(data) {
+        totalImages = data;
+        const dataLen = data.length;
+        allNum.innerHTML = dataLen
+        const img = createImage()
+        container.append(img)
+        loadImageDataFirst()
+      });
+    }
+
+    function loadImageDataFirst() {
+      let clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
+      const allImgElement = document.querySelectorAll('.comic-img')
+      allImgElement.forEach(function(ele) {
+        const distant = ele.getBoundingClientRect().top
+        if (clientHeight > distant) {
+          const url = ele.getAttribute('data-src')
+          const loadMark = ele.getAttribute('data-loaded')
+          if (loadMark == 0) {
+            ele.src = url;
+          }
+        }
+      })
+>>>>>>> abfcd45 (feat: add local data view)
     }
 
     function init() {
@@ -108,12 +268,31 @@
       container.innerHTML = '';
       localStorage.setItem('imageNum', '');
       setTimeoutMark = null
+<<<<<<< HEAD
 
       // 记录看到的章节历史
       localStorage.setItem(comicName,chapter);
+=======
+      const storedChapter = localStorage.getItem(comicName)
+      // 如果是同一个章节，那么就不重置 imageNum ，也就是接着上次记录看
+      if (storedChapter != chapter) {
+        localStorage.setItem('imageNum', '');
+      } else {
+        // const imageNum = localStorage.getItem('imageNum');
+        // localStorage.setItem('imageNum', imageNum-1);
+      }
+      // 记录看到的章节历史
+      localStorage.setItem(comicName,chapter);
 
-      const img = createImage()
-      container.append(img)
+      const deviceType = getDeviceType();
+      if (deviceType == 'phone') {
+        container.style.width = '100%'
+      }
+      setChapterTip(container)
+
+      // loadImageData()
+>>>>>>> abfcd45 (feat: add local data view)
+
       initEvent(container);
       window.onscroll = function() {
         clearTimeout(setTimeoutMark)
@@ -121,10 +300,17 @@
           let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
           let clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
           let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
-          if(scrollHeight > clientHeight && scrollTop + clientHeight === scrollHeight) {
-            const img = createImage()
-            container.append(img)
-          }
+          const allImgElement = document.querySelectorAll('.comic-img')
+          allImgElement.forEach(function(ele) {
+            const distant = ele.getBoundingClientRect().top
+            if (clientHeight > distant) {
+              const url = ele.getAttribute('data-src')
+              const loadMark = ele.getAttribute('data-loaded')
+              if (loadMark == 0) {
+                ele.src = url;
+              }
+            }
+          })
         },100)
 
       }
