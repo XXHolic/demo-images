@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <link rel="stylesheet" href="./reset.css">
@@ -34,17 +34,26 @@
     .bottom-tool:hover {
       opacity: 1;
     }
+    .trigger-tool {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 50%;
+      z-index: 50;
+    }
   </style>
 </head>
 <body>
   <div>
     <div id='imgList' class="img-container">
     </div>
-    <div class="bottom-tool">
+    <div class="bottom-tool" id='bottomTool'>
       <button id='nextPage'>下一页</button>
       <button id='comicIndex'>目录</button>
       <button id='nextChapter'>下一话</button>
     </div>
+    <div class="trigger-tool" id="triggerTool"></div>
   </div>
   <script>
     const comicName = 'shiZhiHai-Color'
@@ -85,6 +94,8 @@
     }
 
     function initEvent(container) {
+      const bottomTool = document.querySelector('#bottomTool');
+      
       const nextPage = document.querySelector('#nextPage');
       nextPage.addEventListener('click',function(){
         const img = createImage()
@@ -101,14 +112,27 @@
         const nextNum = Number(chapter) + 1;
         window.location.href = `${window.location.origin}/src/detail.html?chapter=${nextNum}`
       })
+      
+      
+      const triggerTool = document.querySelector('#triggerTool');
+      triggerTool.addEventListener('click',function(){
+        if (bottomTool.style.opacity == '1') {
+          bottomTool.style.opacity = 0;
+        } else {
+          bottomTool.style.opacity = 1
+        }
+      })
     }
 
     function init() {
       const container = document.querySelector('#imgList');
       container.innerHTML = '';
-      localStorage.setItem('imageNum', '');
       setTimeoutMark = null
-
+      const storedChapter = localStorage.getItem(comicName)
+      // 如果是同一个章节，那么就不重置 imageNum ，也就是接着上次记录看
+      if (storedChapter != chapter) {
+        localStorage.setItem('imageNum', '');
+      }
       // 记录看到的章节历史
       localStorage.setItem(comicName,chapter);
 
