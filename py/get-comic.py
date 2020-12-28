@@ -1,10 +1,16 @@
 # -*- coding: UTF-8 -*-
 import requests
+from requests.adapters import HTTPAdapter
 import json
 import re
 import os
 import urllib.parse
 import utils
+
+retryReq = requests.Session()
+retryReq.mount('http://', HTTPAdapter(max_retries=2))
+retryReq.mount('https://', HTTPAdapter(max_retries=2))
+
 
 baseRoot= '../comic//'
 # baseRoot= '../comic//'
@@ -89,7 +95,7 @@ def down_img(localFold,data,isDirect):
     if (os.path.exists(filename)):
       print(str(img_index)+' exists')
     else:
-      res = requests.get(img_item,headers=imgHeader)
+      res = retryReq.get(img_item,headers=imgHeader,timeout=30)
       # print(res.status_code)
       if (res.status_code == 200):
         with open(filename, "wb") as f:
