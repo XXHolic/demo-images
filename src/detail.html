@@ -34,8 +34,6 @@
     .bottom-tool:hover {
       opacity: 1;
     }
-<<<<<<< HEAD
-=======
     .trigger-tool {
       position: fixed;
       top: 0;
@@ -66,7 +64,6 @@
       text-align: center;
       background-color: rgba(0, 0, 0, 1);
     }
->>>>>>> abfcd45 (feat: add local data view)
   </style>
 </head>
 <body>
@@ -78,12 +75,8 @@
     </div>
     <div id='imgList' class="img-container">
     </div>
-<<<<<<< HEAD
-    <div class="bottom-tool">
-=======
     <div class="chapter-tip">chapter <span id="chapterNum">0</span> <span id="curNum">0</span>/<span id="allNum">0</span></div>
     <div class="bottom-tool" id='bottomTool'>
->>>>>>> abfcd45 (feat: add local data view)
       <button id='nextPage'>下一页</button>
       <button id='comicIndex'>目录</button>
       <button id='nextChapter'>下一话</button>
@@ -95,9 +88,6 @@
     const curNum = document.querySelector('#curNum');
     const container = document.querySelector('#imgList');
     const chapter = getQueryStringArgs('chapter');
-<<<<<<< HEAD
-    const imgType = '..png';
-=======
     const imgType = '.jpg';
     let totalImages = [];
 
@@ -117,7 +107,6 @@
           return "pc";
       }
     }
->>>>>>> abfcd45 (feat: add local data view)
 
     function getQueryStringArgs(params) {
       var qs = (location.search.length > 0 ? location.search.substring(1) : ""),
@@ -176,12 +165,9 @@
     }
 
     function initEvent(container) {
-<<<<<<< HEAD
-=======
       const bottomTool = document.querySelector('#bottomTool');
       const topTool = document.querySelector('#topTool');
 
->>>>>>> abfcd45 (feat: add local data view)
       const nextPage = document.querySelector('#nextPage');
       nextPage.addEventListener('click',function(){
         const img = createImage()
@@ -200,8 +186,6 @@
         const nextNum = Number(chapter) + 1;
         window.location.href = `./detail.html?chapter=${nextNum}`
       })
-<<<<<<< HEAD
-=======
 
       const jump = document.querySelector('#jump');
       const jumpNumEle = document.querySelector('#jumpNum');
@@ -260,7 +244,6 @@
           }
         }
       })
->>>>>>> abfcd45 (feat: add local data view)
     }
 
     function init() {
@@ -268,11 +251,6 @@
       container.innerHTML = '';
       localStorage.setItem('imageNum', '');
       setTimeoutMark = null
-<<<<<<< HEAD
-
-      // 记录看到的章节历史
-      localStorage.setItem(comicName,chapter);
-=======
       const storedChapter = localStorage.getItem(comicName)
       // 如果是同一个章节，那么就不重置 imageNum ，也就是接着上次记录看
       if (storedChapter != chapter) {
@@ -291,7 +269,6 @@
       setChapterTip(container)
 
       // loadImageData()
->>>>>>> abfcd45 (feat: add local data view)
 
       initEvent(container);
       window.onscroll = function() {
