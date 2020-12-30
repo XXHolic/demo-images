@@ -31,13 +31,13 @@
   </style>
 </head>
 <body>
-  <h2 class="tc">name</h2>
+  <h2 class="tc">一拳超人 原作版</h2>
   <ul id='chapterList' class="list">
 
   </ul>
   <div id='viewHistory' class="df"></div>
   <script>
-    const comicName = ''
+    const comicName = 'yiQuanChaoRen-Origin'
     function getChapterList() {
       fetch(`../comic/${comicName}/chapter.json`).then((res) => {
         return res.json();
