@@ -1,0 +1,3 @@
+- yiQuanChaoRen-Origin: 原作
+- yiQuanChaoRen-Serial：连载
+- yiQuanChaoRen-Single：单行本
