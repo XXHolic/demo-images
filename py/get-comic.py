@@ -12,8 +12,8 @@ retryReq.mount('http://', HTTPAdapter(max_retries=2))
 retryReq.mount('https://', HTTPAdapter(max_retries=2))
 
 
-baseRoot= '../comic/yiQuanChaoRen-Origin/'
-# baseRoot= '../comic/yiQuanChaoRen-Serial/'
+# baseRoot= '../comic/yiQuanChaoRen-Origin/'
+baseRoot= '../comic/yiQuanChaoRen-Serial/'
 # baseRoot= '../comic/yiQuanChaoRen-Single/'
 maxPageNum = 200
 fileType = ".html"
@@ -182,7 +182,7 @@ def get_every_img_address_html(localFold,downChapter):
     filename = reqList + downChapter + "_p"+ num_format + fileType
 
     # ,headers=chapterHeaders
-    res = requests.get(filename,headers=chapterHeaders)
+    res = retryReq.get(filename,headers=chapterHeaders,timeout=60)
 
     if (res.status_code == 200):
 
