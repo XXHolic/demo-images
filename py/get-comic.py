@@ -12,8 +12,8 @@ retryReq.mount('http://', HTTPAdapter(max_retries=2))
 retryReq.mount('https://', HTTPAdapter(max_retries=2))
 
 #  获取源 https://www.manhuadb.com/
-baseRoot= '../comic/shiZhiHai-Color/'
-# baseRoot= '../comic/shiZhiHai-Single/'
+# baseRoot= '../comic/shiZhiHai-Color/'
+baseRoot= '../comic/shiZhiHai-Single/'
 maxPageNum = 300
 fileType = ".html"
 imgType = '.png'
@@ -65,7 +65,7 @@ imgHeader = {
   "cache-control":"no-cache",
   "pragma":"no-cache",
   "referer":"https://www.manhuadb.com/",
-  "cookie":"__cfduid=d7ef3289ebf61d9416ee0f8dc4495c02d1608972507; _ga=GA1.2.945506577.1608972509; _gid=GA1.2.127522826.1608972509; Hm_lvt_b09a6e73b4faec9edd5935dc45604b5b=1608972509,1609042566,1609056406; Hm_lpvt_b09a6e73b4faec9edd5935dc45604b5b=1609082059",
+  "cookie":"__cfduid=d7ef3289ebf61d9416ee0f8dc4495c02d1608972507; _ga=GA1.2.945506577.1608972509; Hm_lvt_b09a6e73b4faec9edd5935dc45604b5b=1608972509,1609042566,1609056406,1609250657; _gid=GA1.2.1353986508.1609250659; _gat_gtag_UA_99000019_2=1; Hm_lpvt_b09a6e73b4faec9edd5935dc45604b5b=1609250824",
   "sec-fetch-dest":"image",
   "sec-fetch-mode":"no-cors",
   "sec-fetch-site":"same-site",
@@ -96,7 +96,7 @@ def down_img(localFold,data,isDirect):
     if (os.path.exists(filename)):
       print(str(img_index)+' exists')
     else:
-      res = retryReq.get(img_item,headers=imgHeader,timeout=30)
+      res = retryReq.get(img_item,headers=imgHeader,timeout=60)
       # print(res.status_code)
       if (res.status_code == 200):
         with open(filename, "wb") as f:
