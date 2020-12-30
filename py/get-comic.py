@@ -1,15 +1,15 @@
 # -*- coding: UTF-8 -*-
 import requests
-# from requests.adapters import HTTPAdapter
+from requests.adapters import HTTPAdapter
 import json
 import re
 import os
 import urllib.parse
 import utils
 
-# retryReq = requests.Session()
-# retryReq.mount('http://', HTTPAdapter(max_retries=2))
-# retryReq.mount('https://', HTTPAdapter(max_retries=2))
+retryReq = requests.Session()
+retryReq.mount('http://', HTTPAdapter(max_retries=2))
+retryReq.mount('https://', HTTPAdapter(max_retries=2))
 
 
 baseRoot= '../comic/yiQuanChaoRen-Origin/'
@@ -98,7 +98,7 @@ def down_img(localFold,data,isDirect):
     if (os.path.exists(filename)):
       print(str(img_index)+' exists')
     else:
-      res = retryReq.get(img_item,headers=imgHeader,timeout=30)
+      res = retryReq.get(img_item,headers=imgHeader,timeout=60)
       # print(res.status_code)
       if (res.status_code == 200):
         with open(filename, "wb") as f:
@@ -323,8 +323,8 @@ def downAllImages():
 
 def main():
   # getChaptersData()
-  getImagesData()
-  # downAllImages()
+  # getImagesData()
+  downAllImages()
   return
 
 
