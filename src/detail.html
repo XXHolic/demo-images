@@ -81,6 +81,7 @@
       <button id='comicIndex'>目录</button>
       <button id='nextChapter'>下一话</button>
     </div>
+    <div class="trigger-tool" id="triggerTool"></div>
   </div>
   <script>
     const comicName = ''
@@ -170,8 +171,7 @@
 
       const nextPage = document.querySelector('#nextPage');
       nextPage.addEventListener('click',function(){
-        const img = createImage()
-        container.append(img)
+        loadImageDataFirst()
         bottomTool.style.opacity = 0;
         topTool.style.opacity = 0;
       })
