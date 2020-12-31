@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="./reset.css">
   <style>
     html,body {background-color: #fafafa}
+    .df {
+      display: flex;
+    }
     .tc {
       text-align: center
     }
@@ -28,22 +31,35 @@
   </style>
 </head>
 <body>
-  <h2 class="tc"></h2>
+  <h2 class="tc">致不灭的你</h2>
   <ul id='chapterList' class="list">
 
   </ul>
+  <div id='viewHistory' class="df"></div>
   <script>
-  fetch('../comic//chapter.json').then((res) => {
-    return res.json();
-  }).then(function(data) {
-    const dataLen = data.length;
-    let htmStr = '';
-    for (let index = 1; index <= dataLen; index++) {
-      let liItem = `<li><a class="list-item" href='./detail.html?chapter=${index}'>${index}</a></li>`;
-      htmStr = htmStr + liItem;
+    const comicName = 'zhiBuMieDeNi'
+    function getChapterList() {
+      fetch(`../comic/${comicName}/chapter.json`).then((res) => {
+        return res.json();
+      }).then(function(data) {
+        const dataLen = data.length;
+        let htmStr = '';
+        for (let index = 1; index <= dataLen; index++) {
+          let liItem = `<li><a class="list-item" href='./detail.html?chapter=${index}'>${index}</a></li>`;
+          htmStr = htmStr + liItem;
+        }
+        document.querySelector('#chapterList').innerHTML = htmStr;
+      });
     }
-    document.querySelector('#chapterList').innerHTML = htmStr;
-  });
+
+    function init() {
+      const viewHistory = localStorage.getItem(comicName) || 1;
+      document.querySelector('#viewHistory').innerHTML = `上次看到: <a class="list-item" href='./detail.html?chapter=${viewHistory}'>${viewHistory}</a>`;
+      getChapterList()
+
+    }
+
+    init();
   </script>
 </body>
 </html>
