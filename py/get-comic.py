@@ -103,8 +103,9 @@ def down_img(localFold,data,isDirect):
           print('chapter '+localFold + '-' + str(imgCount) + ' down success')
           f.close()
       else:
+        print('chapter '+localFold + '-' + str(imgCount) + ' down failed')
         # 没有正确响应，认定没有接下来的图片了，就跳出循环
-        img_index = img_len
+        # img_index = img_len
     img_index += 1
   return
 
@@ -302,8 +303,8 @@ def downAllImages():
     content = f.read()
     chapterList = json.loads(content)
     chapterNum = len(chapterList)
-    startDire = 1
-    while startDire <= chapterNum:
+    startDire = 8
+    while startDire <= 8:
       fold_name = urllib.parse.unquote(str(startDire)) + '/'
       imgListFile = baseRoot + fold_name + imagesJsonFileName
       with open(imgListFile, "r",encoding="utf-8") as f:
@@ -315,8 +316,8 @@ def downAllImages():
 
 def main():
   # getChaptersData()
-  getImagesData()
-  # downAllImages()
+  # getImagesData()
+  downAllImages()
   return
 
 
