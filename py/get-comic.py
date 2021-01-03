@@ -12,13 +12,13 @@ retryReq.mount('http://', HTTPAdapter(max_retries=2))
 retryReq.mount('https://', HTTPAdapter(max_retries=2))
 
 
-baseRoot= '../comic//'
+baseRoot= '../comic/joJoLion-Single/'
 # baseRoot= '../comic//'
 maxPageNum = 200
 fileType = ".html"
 imgType = '.png'
-comicMark = '15403'
-reqList="https://www.manhuaniu.com/manhua/" + comicMark + "/"
+comicMark = '154'
+reqList="https://www.manhuadb.com/manhua/" + comicMark + "/"
 chapterFile = baseRoot + 'chapter.json'
 imagesJsonFileName = 'images.json'
 emptyJsonFileName = 'empty.json'
@@ -138,7 +138,7 @@ def get_img_address_html(localFold,downChapter):
   while page_num <= 1:
     num_format = str(page_num)
     filename = reqList + downChapter+ fileType + "?p=" + num_format
-    res = requests.get(filename,headers=chapterHeaders)
+    res = requests.get(filename)
     titleText = 'not found'
     if (res.status_code == 200):
       # print(res.text)chapterImages
@@ -180,6 +180,7 @@ def get_every_img_address_html(localFold,downChapter):
   imgListFile = baseRoot+fold_name+ imagesJsonFileName
   emptyFile = baseRoot+fold_name+ emptyJsonFileName
   emptyRecord = []
+  titleText = 'not found'
   if (os.path.exists(emptyFile)):
     with open(emptyFile, "r",encoding="utf-8") as f:
         content = f.read()
@@ -196,8 +197,8 @@ def get_every_img_address_html(localFold,downChapter):
   # while page_num <= 1:
     num_format = str(page_num)
     filename = reqList + downChapter + "_p"+ num_format + fileType
-    res = requests.get(filename,headers=chapterHeaders)
-    titleText = 'not found'
+    res = requests.get(filename)
+
     if (res.status_code == 200):
 
       pattern = re.compile(r'<img class="img-fluid show-pic"+.*?\/>')
@@ -258,15 +259,15 @@ def get_every_img_address_html(localFold,downChapter):
 
 # 获取章节数据，并存放到本地
 def getChaptersData():
-  reqUrl = 'https://www..com/manhua/'+ comicMark +'/'
-  res = requests.get(reqUrl,headers=chapterListHeaders)
+  reqUrl = 'https://www.manhuadb.com/manhua/'+ comicMark +'/'
+  res = requests.get(reqUrl)
   # print(res.status_code)
   if (res.status_code == 200):
     pattern = re.compile(r'<ol class="links-of-books num_div"+.*?>([\s\S]*?)</ol*?>')
     versionResult = pattern.findall(res.text)
     # 可能有多个版本，例如黑白和彩色，所以这里需要再处理一次
-    pattern2 = re.compile(r'href="/manhua/119/+.*?html"')
-    result = pattern2.findall(versionResult[2])
+    pattern2 = re.compile(r'href="/manhua/154/+.*?html"')
+    result = pattern2.findall(versionResult[0])
     # 前传
     qianZhuan = []
     # 正传
@@ -336,7 +337,7 @@ def downAllImages():
 def main():
   # getChaptersData()
   # getImagesData()
-  # downAllImages()
+  downAllImages()
   return
 
 
