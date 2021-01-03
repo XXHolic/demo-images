@@ -73,6 +73,16 @@ imgHeader = {
 
 # 下载图片
 def down_img(localFold,data,isDirect):
+  # 漫画网站本来应该有，但返回了空的数据
+  emptyImageList = []
+  fold_name = urllib.parse.unquote(localFold) + '/'
+  emptyFile = baseRoot+fold_name+ emptyJsonFileName
+  emptyRecord = []
+  if (os.path.exists(emptyFile)):
+    with open(emptyFile, "r",encoding="utf-8") as f:
+        content = f.read()
+        if (content):
+          emptyRecord = json.loads(content)
   img_index = 0
   img_len = len(data)
   while img_index < img_len:
@@ -80,7 +90,7 @@ def down_img(localFold,data,isDirect):
     if (not img_item):
       img_index += 1
       continue
-    fold_name = urllib.parse.unquote(localFold) + '/'
+
     img_item_arr = img_item.split('/')
     img_arr_len = len(img_item_arr)
     img_item_arr_last = img_item_arr[img_arr_len-1]
@@ -103,9 +113,19 @@ def down_img(localFold,data,isDirect):
           print('chapter '+localFold + '-' + str(imgCount) + ' down success')
           f.close()
       else:
-        # 没有正确响应，认定没有接下来的图片了，就跳出循环
-        img_index = img_len
+        print('chapter '+localFold + '-' + str(imgCount) + ' down failed')
+        # 针对一张情况，没有正确响应，认定没有接下来的图片了，就跳出循环
+        # img_index = img_len
+        # 知道总数的情况
+        if (emptyRecord.count(imgCount) == 0):
+          emptyImageList.append(imgCount)
     img_index += 1
+  emptyRecord.extend(emptyImageList)
+  with open(emptyFile, "wb") as f:
+      resultStr = json.dumps(emptyRecord)
+      # print(resultStr)
+      f.write(resultStr.encode(encoding='UTF-8'))
+      f.close()
   return
 
 # 获取图片下载的地址，这种适用图片地址无法看出规律，
@@ -238,7 +258,7 @@ def get_every_img_address_html(localFold,downChapter):
 
 # 获取章节数据，并存放到本地
 def getChaptersData():
-  reqUrl = 'https://www.com/manhua/'+ comicMark +'/'
+  reqUrl = 'https://www..com/manhua/'+ comicMark +'/'
   res = requests.get(reqUrl,headers=chapterListHeaders)
   # print(res.status_code)
   if (res.status_code == 200):
@@ -271,7 +291,7 @@ def getChaptersData():
       with open(chapterFile, "wb") as f:
         resultStr = json.dumps(zhengZhuan)
         f.write(resultStr.encode(encoding='UTF-8'))
-        print('get zhengZhuan chapter list success')
+        print('get chapter list success')
         f.close()
       # with open(preChapterFile, "wb") as f:
       #   resultStr = json.dumps(qianZhuan)
