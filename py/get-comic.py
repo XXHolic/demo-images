@@ -12,13 +12,13 @@ retryReq.mount('http://', HTTPAdapter(max_retries=2))
 retryReq.mount('https://', HTTPAdapter(max_retries=2))
 
 
-baseRoot= '../comic//'
+baseRoot= '../comic/dianJuRen/'
 # baseRoot= '../comic//'
 maxPageNum = 200
 fileType = ".html"
 imgType = '.png'
-comicMark = '15403'
-reqList="https://www.manhuaniu.com/manhua/" + comicMark + "/"
+comicMark = '2490'
+reqList="https://www.manhuadb.com/manhua/" + comicMark + "/"
 chapterFile = baseRoot + 'chapter.json'
 imagesJsonFileName = 'images.json'
 emptyJsonFileName = 'empty.json'
@@ -45,7 +45,7 @@ chapterHeaders = {
   "accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
   "cache-control":"no-cache",
   "cookie":"UM_distinctid=174a991ad1a26c-0afb998ad92617-3323767-1fa400-174a991ad1b5a8; __gads=ID=289a30228745382c-22cecc6d28c500f5:T=1607699470:RT=1607699470:R:S=ALNI_MbODWxVquBiHUrh8moe6CHup0kNMA; CNZZDATA1278325662=1030922568-1600569125-https%253A%252F%252Fcn.bing.com%252F%7C1608114925",
-  "Host":"www.manhuaniu.com",
+  "Host":"www.manhuadb.com",
   "pragma":"no-cache",
   "referer":reqList,
   "sec-fetch-dest":"document",
@@ -64,7 +64,7 @@ imgHeader = {
   "accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
   "cache-control":"no-cache",
   "pragma":"no-cache",
-  "referer":"https://www.manhuaniu.com/",
+  "referer":"https://www.manhuadb.com/",
   "sec-fetch-dest":"image",
   "sec-fetch-mode":"no-cors",
   "sec-fetch-site":"cross-site",
@@ -258,15 +258,15 @@ def get_every_img_address_html(localFold,downChapter):
 
 # 获取章节数据，并存放到本地
 def getChaptersData():
-  reqUrl = 'https://www..com/manhua/'+ comicMark +'/'
+  reqUrl = 'https://www.manhuadb.com/manhua/'+ comicMark +'/'
   res = requests.get(reqUrl)
   # print(res.status_code)
   if (res.status_code == 200):
     pattern = re.compile(r'<ol class="links-of-books num_div"+.*?>([\s\S]*?)</ol*?>')
     versionResult = pattern.findall(res.text)
     # 可能有多个版本，例如黑白和彩色，所以这里需要再处理一次
-    pattern2 = re.compile(r'href="/manhua/119/+.*?html"')
-    result = pattern2.findall(versionResult[2])
+    pattern2 = re.compile(r'href="/manhua/2490/+.*?html"')
+    result = pattern2.findall(versionResult[0])
     # 前传
     qianZhuan = []
     # 正传
@@ -336,7 +336,7 @@ def downAllImages():
 def main():
   # getChaptersData()
   # getImagesData()
-  # downAllImages()
+  downAllImages()
   return
 
 
