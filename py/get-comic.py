@@ -12,12 +12,12 @@ retryReq.mount('http://', HTTPAdapter(max_retries=2))
 retryReq.mount('https://', HTTPAdapter(max_retries=2))
 
 
-baseRoot= '../comic/joJoLion-Single/'
-# baseRoot= '../comic//'
+# baseRoot= '../comic/joJoLion-Single/'
+baseRoot= '../comic/veller/'
 maxPageNum = 200
 fileType = ".html"
 imgType = '.png'
-comicMark = '154'
+comicMark = '20282'
 reqList="https://www.manhuadb.com/manhua/" + comicMark + "/"
 chapterFile = baseRoot + 'chapter.json'
 imagesJsonFileName = 'images.json'
@@ -266,7 +266,7 @@ def getChaptersData():
     pattern = re.compile(r'<ol class="links-of-books num_div"+.*?>([\s\S]*?)</ol*?>')
     versionResult = pattern.findall(res.text)
     # 可能有多个版本，例如黑白和彩色，所以这里需要再处理一次
-    pattern2 = re.compile(r'href="/manhua/154/+.*?html"')
+    pattern2 = re.compile(r'href="/manhua/20282/+.*?html"')
     result = pattern2.findall(versionResult[0])
     # 前传
     qianZhuan = []
