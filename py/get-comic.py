@@ -105,7 +105,7 @@ def down_img(localFold,data,isDirect):
     if (os.path.exists(filename)):
       print(str(img_index)+' exists')
     else:
-      res = retryReq.get(img_item,headers=imgHeader,timeout=30)
+      res = retryReq.get(img_item,timeout=60)
       # print(res.status_code)
       if (res.status_code == 200):
         with open(filename, "wb") as f:
@@ -196,7 +196,7 @@ def get_every_img_address_html(localFold,downChapter):
   # while page_num <= 1:
     num_format = str(page_num)
     filename = reqList + downChapter + "_p"+ num_format + fileType
-    res = requests.get(filename,headers=chapterHeaders)
+    res = requests.get(filename)
     titleText = 'not found'
     if (res.status_code == 200):
 
@@ -259,7 +259,7 @@ def get_every_img_address_html(localFold,downChapter):
 # 获取章节数据，并存放到本地
 def getChaptersData():
   reqUrl = 'https://www..com/manhua/'+ comicMark +'/'
-  res = requests.get(reqUrl,headers=chapterListHeaders)
+  res = requests.get(reqUrl)
   # print(res.status_code)
   if (res.status_code == 200):
     pattern = re.compile(r'<ol class="links-of-books num_div"+.*?>([\s\S]*?)</ol*?>')
