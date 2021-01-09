@@ -1,0 +1,1 @@
+<title>BEASTARS漫画连载 第02回-漫画DB</title>
