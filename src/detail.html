@@ -84,12 +84,12 @@
     <div class="trigger-tool" id="triggerTool"></div>
   </div>
   <script>
-    const comicName = ''
+    const comicName = 'dianJuRen'
     const prefix = `../comic/${comicName}`
     const curNum = document.querySelector('#curNum');
     const container = document.querySelector('#imgList');
     const chapter = getQueryStringArgs('chapter');
-    const imgType = '.jpg';
+    const imgType = '.png';
     let totalImages = [];
 
     function getDeviceType() {
@@ -142,7 +142,13 @@
       const imgWrap = document.createElement('div')
       imgWrap.setAttribute('class','wrap-img')
       const imgEle = document.createElement('img');
-      const srcUrl = `${prefix}/${chapter}/${num}${imgType}`
+      const imgOriginData=totalImages[num-1]
+      let imgOriginType = imgType
+      if (imgOriginData) {
+        const imgOriginDataSplit = imgOriginData.split('.')
+        imgOriginType = '.'+imgOriginDataSplit[imgOriginDataSplit.length-1]
+      }
+      const srcUrl = `${prefix}/${chapter}/${num}${imgOriginType}`
       imgEle.setAttribute('data-src',srcUrl)
       imgEle.setAttribute('data-loaded',0)
       imgEle.setAttribute('class','comic-img')
