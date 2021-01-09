@@ -12,13 +12,13 @@ retryReq.mount('http://', HTTPAdapter(max_retries=2))
 retryReq.mount('https://', HTTPAdapter(max_retries=2))
 
 
-baseRoot= '../comic//'
+baseRoot= '../comic/beastars/'
 # baseRoot= '../comic//'
 maxPageNum = 200
 fileType = ".html"
 imgType = '.png'
-comicMark = '15403'
-reqList="https://www.manhuaniu.com/manhua/" + comicMark + "/"
+comicMark = '1489'
+reqList="https://www.manhuadb.com/manhua/" + comicMark + "/"
 chapterFile = baseRoot + 'chapter.json'
 imagesJsonFileName = 'images.json'
 emptyJsonFileName = 'empty.json'
@@ -258,15 +258,15 @@ def get_every_img_address_html(localFold,downChapter):
 
 # 获取章节数据，并存放到本地
 def getChaptersData():
-  reqUrl = 'https://www..com/manhua/'+ comicMark +'/'
+  reqUrl = 'https://www.manhuadb.com/manhua/'+ comicMark +'/'
   res = requests.get(reqUrl)
   # print(res.status_code)
   if (res.status_code == 200):
     pattern = re.compile(r'<ol class="links-of-books num_div"+.*?>([\s\S]*?)</ol*?>')
     versionResult = pattern.findall(res.text)
     # 可能有多个版本，例如黑白和彩色，所以这里需要再处理一次
-    pattern2 = re.compile(r'href="/manhua/119/+.*?html"')
-    result = pattern2.findall(versionResult[2])
+    pattern2 = re.compile(r'href="/manhua/1489/+.*?html"')
+    result = pattern2.findall(versionResult[0])
     # 前传
     qianZhuan = []
     # 正传
@@ -336,7 +336,7 @@ def downAllImages():
 def main():
   # getChaptersData()
   # getImagesData()
-  # downAllImages()
+  downAllImages()
   return
 
 

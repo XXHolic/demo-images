@@ -1,0 +1,1 @@
+<title>BEASTARS漫画连载 第118话-漫画DB</title>
