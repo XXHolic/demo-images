@@ -22,6 +22,7 @@ reqList="https://www..com/manhua/" + comicMark + "/"
 chapterFile = baseRoot + 'chapter.json'
 imagesJsonFileName = 'images.json'
 emptyJsonFileName = 'empty.json'
+totalJsonFileName = 'total.json'
 preChapterFile = '../comic//chapter.json'
 
 chapterListHeaders = {
@@ -179,6 +180,7 @@ def get_every_img_address_html(localFold,downChapter):
   fold_name = urllib.parse.unquote(localFold) + '/'
   imgListFile = baseRoot+fold_name+ imagesJsonFileName
   emptyFile = baseRoot+fold_name+ emptyJsonFileName
+  totalFile = baseRoot+fold_name+ totalJsonFileName
   emptyRecord = []
   if (os.path.exists(emptyFile)):
     with open(emptyFile, "r",encoding="utf-8") as f:
@@ -191,13 +193,22 @@ def get_every_img_address_html(localFold,downChapter):
         content = f.read()
         if (content):
           imageExistList = json.loads(content)
+  localTotalNum = 0
+  if (os.path.exists(totalFile)):
+    with open(totalFile, "r",encoding="utf-8") as f:
+        content = f.read()
+        if (content):
+          localTotalNumObj = json.loads(content)
+          localTotalNum = localTotalNumObj['total']
   page_num = len(imageExistList) + 1
+  titleText = 'not found'
+
   while page_num <= maxPageNum:
   # while page_num <= 1:
     num_format = str(page_num)
     filename = reqList + downChapter + "_p"+ num_format + fileType
     res = requests.get(filename)
-    titleText = 'not found'
+
     if (res.status_code == 200):
 
       pattern = re.compile(r'<img class="img-fluid show-pic"+.*?\/>')
@@ -215,6 +226,8 @@ def get_every_img_address_html(localFold,downChapter):
         titleText = titleResult[0]
       if (len(totalResult)):
         totalCount = utils.getQuoteNumValue(totalResult[0])
+        if(totalCount != localTotalNum):
+          localTotalNum = totalCount
         if (totalCount != maxPageNum):
           global maxPageNum
           maxPageNum = totalCount
@@ -223,6 +236,8 @@ def get_every_img_address_html(localFold,downChapter):
         imgSrcValue = utils.getImgSrc(result[0])
         img_list.append(imgSrcValue)
       else:
+        # 避免多余的数据添加
+        if (localTotalNum and page_num <= localTotalNum):
           print('get chapter '+ localFold +' image ' + str(page_num) + ' empty')
           # 放一个占位符，这样生成图片顺序就保持一致，也好知道那里出问题了
           img_list.append('')
@@ -247,6 +262,11 @@ def get_every_img_address_html(localFold,downChapter):
       # print(resultStr)
       f.write(resultStr.encode(encoding='UTF-8'))
       f.close()
+  with open(totalFile, "wb") as f:
+      resultStr = json.dumps({'total':localTotalNum})
+      # print(resultStr)
+      f.write(resultStr.encode(encoding='UTF-8'))
+      f.close()
   with open(emptyFile, "wb") as f:
       resultStr = json.dumps(emptyRecord)
       # print(resultStr)
@@ -266,7 +286,7 @@ def getChaptersData():
     versionResult = pattern.findall(res.text)
     # 可能有多个版本，例如黑白和彩色，所以这里需要再处理一次
     pattern2 = re.compile(r'href="/manhua/119/+.*?html"')
-    result = pattern2.findall(versionResult[2])
+    result = pattern2.findall(versionResult[0])
     # 前传
     qianZhuan = []
     # 正传
