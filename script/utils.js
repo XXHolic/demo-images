@@ -44,6 +44,7 @@ function requestPromise(url, options={}) {
       reject(e);
     });
   }).catch(e => {
+    reject(e)
     console.error('request error', e)
   })
 }
@@ -64,6 +65,15 @@ function writeLocalFile(name,content,encoding='utf8') {
       console.error(`write fail ${name}`);
     }
   });
+}
+
+function readJsonFile(path,init=[]) {
+  if (fs.existsSync(path)) {
+    const content = fs.readFileSync(path)
+    return JSON.parse(content)
+  }
+
+  return init
 }
 
 
@@ -258,4 +268,4 @@ const imgHeader = {
   "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36",
 }
 
-module.exports = {requestPromise,createFold,writeLocalFile,LZString,imgHeader}
+module.exports = {requestPromise,createFold,writeLocalFile,readJsonFile,LZString,imgHeader}
