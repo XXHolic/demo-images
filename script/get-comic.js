@@ -2,7 +2,7 @@
 const fs = require('fs');
 const { createFold,LZString,imgHeader,writeLocalFile,requestPromise, } = require('./utils')
 
-const baseRoot = '../comic/test/'
+const baseRoot = '../comic/happiness/'
 let maxPageNum = 200
 const comicMark = '16389'
 const imgHost = 'https://i.hamreus.com'
@@ -34,7 +34,7 @@ async function getChaptersData() {
         const valueSplit = cur.split('/')
         const valueSplit2Len = valueSplit.length
         const chapterLink = valueSplit[valueSplit2Len-1]
-        acc.push(chapterLink)
+        acc.unshift(chapterLink)
         return acc
       },[])
     // console.log('---allLink---')
@@ -114,9 +114,9 @@ async function getImageSrc(localFold,downChapter) {
       list:listData,
     })
 
-    writeLocalFile(imagesFile,imagesContent)
-    writeLocalFile(titleFile,cname)
-    console.log(`get chapter ${localFold} all image src`)
+    await writeLocalFile(imagesFile,imagesContent)
+    await writeLocalFile(titleFile,cname)
+    await console.log(`get chapter ${localFold} all image src`)
   }
 
 }
@@ -127,15 +127,15 @@ async function downAllImages() {
     // console.log('---chapterList---')
     // console.log(chapterList)
   const chapterNum = chapterList.length
-  let startDire = 1
-  // while (startDire <= chapterNum) {
-  while (startDire <= 1) { // 测试用
+  let startDire = 46
+  while (startDire <= chapterNum) {
+  // while (startDire <= 1) { // 测试用
     imgListFile = `${baseRoot}${startDire}/${imagesJsonFileName}`
     const imagesContent = fs.readFileSync(imgListFile)
     const {total,list} = JSON.parse(imagesContent)
 
     const dataLen = list.length
-    for (let index = 0; index < dataLen;) {
+    for (let index = 0; index < dataLen;index++) {
       const url = list[index];
       // console.info('url',url)
       const split1 = url.split('?');
@@ -152,9 +152,8 @@ async function downAllImages() {
         return;
       }
       const res = await requestPromise(url,{encoding:'binary',headers:imgHeader})
-      writeLocalFile(imagePath,res,'binary')
-      console.log(`down success ${imagePath}`)
-      index++
+      await writeLocalFile(imagePath,res,'binary')
+      await console.log(`down success ${imagePath}`)
     }
     startDire += 1
   }
