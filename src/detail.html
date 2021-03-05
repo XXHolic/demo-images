@@ -145,8 +145,14 @@
       const imgOriginData=totalImages[num-1]
       let imgOriginType = imgType
       if (imgOriginData) {
-        const imgOriginDataSplit = imgOriginData.split('.')
-        imgOriginType = '.'+imgOriginDataSplit[imgOriginDataSplit.length-1]
+        const split1 = imgOriginData.split('?');
+        const split1Res = split1[0];
+        const split2 = split1Res.split('/');
+        const split2Res = split2[split2.length-1];
+        const reg = /\.[a-z]{1,4}/g;
+        const matchResult = split2Res.match(reg);
+        // const imagType = matchResult.join('')
+        imgOriginType = matchResult[0]
       }
       const srcUrl = `${prefix}/${chapter}/${num}${imgOriginType}`
       imgEle.setAttribute('data-src',srcUrl)
@@ -228,8 +234,8 @@
       fetch(`../comic/${comicName}/${chapter}/images.json`).then((res) => {
         return res.json();
       }).then(function(data) {
-        totalImages = data;
-        const dataLen = data.length;
+        totalImages = data.list?data.list:data;
+        const dataLen = totalImages.length;
         allNum.innerHTML = dataLen
         const img = createImage()
         container.append(img)
