@@ -73,9 +73,9 @@ async function getImagesData() {
     // console.log('---chapterList---')
     // console.log(chapterList)
   const chapterNum = chapterList.length
-  let startDire = 204 // 跟本地的文件夹命名顺序一致，从 1 开始
-  // while (startDire <= chapterNum) {
-  while (startDire <= 204) { // 测试用
+  let startDire = 205 // 跟本地的文件夹命名顺序一致，从 1 开始
+  while (startDire <= chapterNum) {
+  // while (startDire <= 204) { // 测试用
     startDownChapter = chapterList[startDire-1]
     createFold(`${baseRoot}${startDire}`)
 
@@ -103,7 +103,7 @@ async function getImagesData() {
 
     await writeLocalFile(imagesFile,imagesContent)
     await writeLocalFile(titleFile,imageData.title)
-    await console.log(`get chapter ${startDire-1} all image src`)
+    console.log(`get chapter ${startDire-1} all image src`)
     startDire += 1
   }
 }
@@ -113,9 +113,9 @@ async function downAllImages() {
     // console.log('---chapterList---')
     // console.log(chapterList)
   const chapterNum = chapterList.length
-  let startDire = 204
-  // while (startDire <= chapterNum) {
-  while (startDire <= 204) { // 测试用
+  let startDire = 205
+  while (startDire <= chapterNum) {
+  // while (startDire <= 204) { // 测试用
     const pre = `${baseRoot}${startDire}/`
     const emptyJsonFile = `${pre}${emptyJsonFileName}`
     const imgListFile = `${pre}${imagesJsonFileName}`
@@ -148,7 +148,7 @@ async function downAllImages() {
       }
 
       await writeLocalFile(imagePath,res,'binary')
-      await console.log(`down success ${imagePath}`)
+      console.log(`down success ${imagePath}`)
     }
     startDire += 1
   }
