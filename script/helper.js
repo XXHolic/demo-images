@@ -125,7 +125,7 @@ const getImageType = (data,type) => {
     const reg = /\.[a-z]{1,4}/g;
     const matchResult = split2Res.match(reg);
     // const imagType = matchResult.join('')
-    const imagType = matchResult[0]
+    fileType = matchResult[0]
   }
   if (type === 2) {
     const split1 = data.split('/');

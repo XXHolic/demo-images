@@ -76,7 +76,7 @@ def downAllImages():
     content = f.read()
     chapterList = json.loads(content)
     chapterNum = len(chapterList)
-    startDire = 209
+    startDire = 1
     while startDire <= chapterNum:
       fold_name = urllib.parse.unquote(str(startDire)) + '/'
       imgListFile = baseRoot + fold_name + imagesJsonFileName

@@ -18,9 +18,7 @@ const {
 } = require('./helper')
 
 const baseRoot = '../comic/huangJinShenWei/'
-let maxPageNum = 200
 const comicMark = 'huangjinshenwei'
-const imgHost = 'https://i.hamreus.com'
 const chapterReqUrl = "https://www.ykmh.com/manhua/" + comicMark + '/'
 const chapterFile = baseRoot + 'chapter.json'
 const imagesJsonFileName = 'images.json'
@@ -73,7 +71,7 @@ async function getImagesData() {
     // console.log('---chapterList---')
     // console.log(chapterList)
   const chapterNum = chapterList.length
-  let startDire = 205 // 跟本地的文件夹命名顺序一致，从 1 开始
+  let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始
   while (startDire <= chapterNum) {
   // while (startDire <= 204) { // 测试用
     startDownChapter = chapterList[startDire-1]
@@ -113,7 +111,7 @@ async function downAllImages() {
     // console.log('---chapterList---')
     // console.log(chapterList)
   const chapterNum = chapterList.length
-  let startDire = 205
+  let startDire = 1
   while (startDire <= chapterNum) {
   // while (startDire <= 204) { // 测试用
     const pre = `${baseRoot}${startDire}/`
