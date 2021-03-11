@@ -79,10 +79,15 @@ function readJsonFile(path,init=[]) {
   return init
 }
 
+function removeRepeat(data) {
+  return Array.from(new Set(data))
+}
+
 
 module.exports = {
   requestPromise,
   createFold,
   writeLocalFile,
   readJsonFile,
+  removeRepeat,
 }

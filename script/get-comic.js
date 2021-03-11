@@ -5,6 +5,7 @@ const {
   writeLocalFile,
   requestPromise,
   readJsonFile,
+  removeRepeat,
 } = require('./utils')
 const {
   getChapterContainerReg,
@@ -13,6 +14,7 @@ const {
   formatChapter,
   sortChapterLink,
   globalExpand,
+  creatClassifyFold,
   getChapterImageData,
   getImageType,
   getImageHeader,
@@ -68,22 +70,35 @@ async function getChaptersData() {
 }
 
 // 获取每个章节下所有图片的链接并存放到本地 json 文件
-async function getImagesData() {
+async function getImagesData(type) {
   // 有就用
   // globalExpand()
+  const useWay2 = type == 2;
+  const fileData = readJsonFile(chapterFile)
 
-  const chapterList = readJsonFile(chapterFile)
+  creatClassifyFold(fileData,baseRoot,1)
+
   let baseFail = readJsonFile(baseEmptyJsonFile)
     // console.log('---chapterList---')
     // console.log(chapterList)
+  let chapterList = fileData
+  const classify = 'serial'
+  if (useWay2) {
+    chapterList = fileData[classify]
+  }
   const chapterNum = chapterList.length
   let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始
   while (startDire <= chapterNum) {
   // while (startDire <= 204) { // 测试用
-    startDownChapter = chapterList[startDire-1]
-    createFold(`${baseRoot}${startDire}`)
+    let startDownChapter = chapterList[startDire-1]
+    let preBaseRoot = `${baseRoot}`
+    if (useWay2) {
+      startDownChapter = startDownChapter.page
+      preBaseRoot = `${baseRoot}${classify}/`
+    }
+    createFold(`${preBaseRoot}${startDire}`)
 
-    const pathPre = `${baseRoot}${startDire}/`
+    const pathPre = `${preBaseRoot}${startDire}/`
     const imagesFile = `${pathPre}${imagesJsonFileName}`
     const titleFile = `${pathPre}${titleFileName}`
     if (fs.existsSync(titleFile) || baseFail.includes(startDownChapter)) {
@@ -91,15 +106,24 @@ async function getImagesData() {
       startDire += 1
       continue;
     }
-    const url = `${chapterReqUrl}${startDownChapter}`
-    const res = await requestPromise(url).catch((e) => {
-      console.log(`chapter fail ${startDownChapter}`)
-      baseFail.push(startDownChapter)
-      writeLocalFile(baseEmptyJsonFile,JSON.stringify(baseFail))
-    })
-    if (!res) {
-      startDire += 1
-      continue;
+    let url = `${chapterReqUrl}${startDownChapter}`
+    if (useWay2) {
+      url = `${chapterReqUrl}${startDownChapter.substr(1)}`
+    }
+    // const res = await requestPromise(url).catch((e) => {
+    //   console.log(`chapter fail ${startDownChapter}`)
+    //   baseFail.push(startDownChapter)
+    //   writeLocalFile(baseEmptyJsonFile,JSON.stringify(baseFail))
+    // })
+
+    // if (!res) {
+    //   startDire += 1
+    //   continue;
+    // }
+
+    for (let index = 0; index < array.length; index++) {
+      const element = array[index];
+
     }
 
     const imageData = getChapterImageData(res,2)
@@ -158,6 +182,17 @@ async function downAllImages() {
   }
 }
 
-getChaptersData()
+async function test () {
+
+  // const url = 'http://www.mangabz.com/m19568/chapterimage.ashx?cid=19568&key=&_cid=19568&_mid=280&_dt=2021-03-11+22%3A22%3A37&_sign=df733a207da179f7173022a324544612'
+  // const result = await requestPromise(`${url}`,{reqType:'http',headers:{}})
+
+  // console.log('---result---')
+  // console.log(result)
+
+}
+
+// getChaptersData()
 // getImagesData()
 // downAllImages()
+test()

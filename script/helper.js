@@ -1,5 +1,13 @@
 
 // 不同的网站，解析的正则不一样，在这里统一区分
+
+const {
+  createFold,
+  writeLocalFile,
+  requestPromise,
+  readJsonFile,
+} = require('./utils')
+
 const getChapterContainerReg = (type) => {
   switch(type){
     case 1:
@@ -80,8 +88,6 @@ const classifyData = (data,type) => {
 
 }
 
-
-
 const sortChapterLink = (data,type) => {
   if (type === 1) {
     // 有的情况可以根据数字大小排序
@@ -93,6 +99,15 @@ const sortChapterLink = (data,type) => {
       return aNum - bNum
     })
   }
+}
+
+const creatClassifyFold = (data,baseRoot,type) => {
+  if (type == 1) {
+    for (const iterator of Object.keys(data)) {
+      createFold(`${baseRoot}${iterator}`)
+    }
+  }
+
 }
 
 // 获取每个章节下所有图片链接
@@ -409,6 +424,7 @@ module.exports = {
   classifyData,
   sortChapterLink,
   globalExpand,
+  creatClassifyFold,
   getChapterImageData,
   getImageType,
   getImageHeader,
