@@ -9,6 +9,7 @@ const {
 const {
   getChapterContainerReg,
   getChapterReg,
+  classifyData,
   formatChapter,
   sortChapterLink,
   globalExpand,
@@ -17,9 +18,10 @@ const {
   getImageHeader,
 } = require('./helper')
 
-const baseRoot = '../comic/huangJinShenWei/'
-const comicMark = 'huangjinshenwei'
-const chapterReqUrl = "https://www.ykmh.com/manhua/" + comicMark + '/'
+const baseRoot = '../comic/diYuLe/'
+const comicMark = '280bz'
+// const chapterReqUrl = "https://www.ykmh.com/manhua/" + comicMark + '/'
+const chapterReqUrl = "http://www.mangabz.com/" + comicMark + '/'
 const chapterFile = baseRoot + 'chapter.json'
 const imagesJsonFileName = 'images.json'
 const titleFileName = 'title.md'
@@ -28,30 +30,34 @@ const baseEmptyJsonFile = baseRoot+'empty.json'
 
 // 获取所有章节数据，并存放到本地
 async function getChaptersData() {
-  const result = await requestPromise(`${chapterReqUrl}`)
+  const result = await requestPromise(`${chapterReqUrl}`,{reqType:'http',headers:{"cookie":"mangabz_lang=2"}})
 
-  const linkReg = getChapterContainerReg(2)
+  const linkReg = getChapterContainerReg(3)
   const matchResult = result.match(linkReg)
   // console.log('---matchResult---')
   // console.log(matchResult)
 
   if (matchResult && matchResult.length) {
-    const chapterReg = getChapterReg(2,comicMark)
+    const chapterReg = getChapterReg(3,comicMark)
     // 默认先取第一个，一个结束后，手动修改
     const chapterLink = matchResult[0]
     const linkMatch = chapterLink.match(chapterReg)
     // console.log('---linkMatch---')
     // console.log(linkMatch)
 
+    // return;
+
     if (linkMatch && linkMatch.length) {
-      let allLink = linkMatch.reduce((acc,cur) => {
-        acc.push(formatChapter(cur,1))
-        return acc
-      },[])
+      // 先按照 正式连载,短篇,卷附录，单行本, 进行分类，然后再分别放入数组
+      const allLink = classifyData(linkMatch)
+      // let allLink = linkMatch.reduce((acc,cur) => {
+      //   acc.push(formatChapter(cur,1))
+      //   return acc
+      // },[])
     // console.log('---allLink---')
     // console.log(allLink)
       // 有的情况可以根据数字大小排序
-      allLink = sortChapterLink(allLink,1)
+      // allLink = sortChapterLink(allLink,1)
       writeLocalFile(chapterFile,JSON.stringify(allLink))
       console.log('get all chapter links success')
     }
@@ -152,6 +158,6 @@ async function downAllImages() {
   }
 }
 
-// getChaptersData()
+getChaptersData()
 // getImagesData()
-downAllImages()
+// downAllImages()

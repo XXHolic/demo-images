@@ -6,15 +6,19 @@ const getChapterContainerReg = (type) => {
     return /<div class="chapter-list cf mt10"+.*?>([\s\S]*?)<\/div*?>/g
     case 2:
     return /<div class="zj_list_con autoHeight"+.*?>([\s\S]*?)<\/div*?>/g
+    case 3:
+    return /<div class="detail-list-form-con"+.*?>([\s\S]*?)<\/div*?>/g
   }
 }
 
 const getChapterReg = (type,comicMark) => {
   switch(type){
     case 1:
-    return new RegExp('href="\/comic\/'+comicMark+'\/+.*?html','g')
+    return new RgExp('href="\/comic\/'+comicMark+'\/+.*?html','g')
     case 2:
     return new RegExp('href="\/manhua\/'+comicMark+'\/+.*?html','g')
+    case 3:
+    return new RegExp('<a href="\/+.*?\/a>','g')
   }
 }
 
@@ -25,9 +29,58 @@ const formatChapter = (data,type) => {
     const valueSplit2Len = valueSplit.length
     chapterLink = valueSplit[valueSplit2Len-1]
   }
+  if (type === 2) {
+    // <a href="/m132667/" class="detail-list-form-item" title="" target="_blank">第106话<span>（19P）</span></a>
+    const matchResult = data.match(/\/m+.*?\//g)
+    const page = matchResult[0]
+    const pattern = /<(\S*?)[^>]*>.*?|<.*? \/>/g
+    const value1 = data.replace(pattern,'')
+    const value2 = value1.replace(/\s+/g,'')
+    chapterLink = {
+      name: value2,
+      link: page
+    }
+  }
 
   return chapterLink
 }
+
+const classifyData = (data,type) => {
+  // 常见的有 serial-正式连载，short-短篇，single-单行本，appendix-卷附录，
+  let intiData = {
+    serial:[],
+    short:[],
+    single:[],
+    appendix:[],
+  }
+  for (let index = 0; index < data.length; index++) {
+    const element = data[index];
+    if (element.indexOf('短篇')>-1 || element.indexOf('番外')>-1) {
+      const formatData = formatChapter(element,2)
+      intiData.short.unshift(formatData)
+      continue;
+    }
+    if (element.indexOf('卷')>-1) {
+      const formatData = formatChapter(element,2)
+      intiData.appendix.unshift(formatData)
+      continue;
+    }
+    if (element.indexOf('单行')>-1) {
+      const formatData = formatChapter(element,2)
+      intiData.single.unshift(formatData)
+      continue;
+    }
+
+    const formatData = formatChapter(element,2)
+    intiData.serial.unshift(formatData)
+
+  }
+
+  return intiData
+
+}
+
+
 
 const sortChapterLink = (data,type) => {
   if (type === 1) {
@@ -353,6 +406,7 @@ module.exports = {
   getChapterContainerReg,
   getChapterReg,
   formatChapter,
+  classifyData,
   sortChapterLink,
   globalExpand,
   getChapterImageData,

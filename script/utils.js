@@ -1,5 +1,6 @@
 const fs = require('fs');
 const https = require('https');
+const http = require('http');
 
 const defaultHttpsOptions = {
   method: 'GET',
@@ -8,12 +9,14 @@ const defaultHttpsOptions = {
 };
 
 function requestPromise(url, options={}) {
+  const { reqType } = options
+  const reqObj = reqType === 'http'?http:https
   const combineOptions = {...defaultHttpsOptions,...options}
   const { encoding } = combineOptions
   return new Promise((resolve, reject) => {
     // console.log('url',url)
     const urlFormat = new URL(url)
-    https.get(urlFormat, combineOptions, (res) => {
+    reqObj.get(urlFormat, combineOptions, (res) => {
       // console.log('状态码:', res.statusCode);
       const { statusCode } = res
 
@@ -44,7 +47,7 @@ function requestPromise(url, options={}) {
       reject(e);
     });
   }).catch(e => {
-    reject(e)
+    console.log(e)
     console.error('request error', e)
   })
 }
