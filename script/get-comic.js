@@ -23,7 +23,8 @@ const {
 const baseRoot = '../comic/diYuLe/'
 const comicMark = '280bz'
 // const chapterReqUrl = "https://www.ykmh.com/manhua/" + comicMark + '/'
-const chapterReqUrl = "http://www.mangabz.com/" + comicMark + '/'
+const site = 'http://www.mangabz.com'
+const chapterReqUrl = site + "/" + comicMark + '/'
 const chapterFile = baseRoot + 'chapter.json'
 const imagesJsonFileName = 'images.json'
 const titleFileName = 'title.md'
@@ -88,12 +89,12 @@ async function getImagesData(type) {
   }
   const chapterNum = chapterList.length
   let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始
-  while (startDire <= chapterNum) {
-  // while (startDire <= 204) { // 测试用
+  // while (startDire <= chapterNum) {
+  while (startDire <= 1) { // 测试用
     let startDownChapter = chapterList[startDire-1]
     let preBaseRoot = `${baseRoot}`
     if (useWay2) {
-      startDownChapter = startDownChapter.page
+      startDownChapter = startDownChapter.link
       preBaseRoot = `${baseRoot}${classify}/`
     }
     createFold(`${preBaseRoot}${startDire}`)
@@ -107,26 +108,24 @@ async function getImagesData(type) {
       continue;
     }
     let url = `${chapterReqUrl}${startDownChapter}`
+    let imageData = {}
+    let reqOptions = {}
     if (useWay2) {
-      url = `${chapterReqUrl}${startDownChapter.substr(1)}`
+      url = `${site}${startDownChapter}`
+      reqOptions = {reqType:'http'}
     }
-    // const res = await requestPromise(url).catch((e) => {
-    //   console.log(`chapter fail ${startDownChapter}`)
-    //   baseFail.push(startDownChapter)
-    //   writeLocalFile(baseEmptyJsonFile,JSON.stringify(baseFail))
-    // })
+    const res = await requestPromise(url,reqOptions).catch((e) => {
+      console.log(`chapter fail ${startDownChapter}`)
+      baseFail.push(startDownChapter)
+      writeLocalFile(baseEmptyJsonFile,JSON.stringify(baseFail))
+    })
 
-    // if (!res) {
-    //   startDire += 1
-    //   continue;
-    // }
-
-    for (let index = 0; index < array.length; index++) {
-      const element = array[index];
-
+    if (!res) {
+      startDire += 1
+      continue;
     }
 
-    const imageData = getChapterImageData(res,2)
+    imageData = getChapterImageData(res,2)
     const imagesContent = JSON.stringify(imageData)
 
     await writeLocalFile(imagesFile,imagesContent)
@@ -184,15 +183,17 @@ async function downAllImages() {
 
 async function test () {
 
-  // const url = 'http://www.mangabz.com/m19568/chapterimage.ashx?cid=19568&key=&_cid=19568&_mid=280&_dt=2021-03-11+22%3A22%3A37&_sign=df733a207da179f7173022a324544612'
-  // const result = await requestPromise(`${url}`,{reqType:'http',headers:{}})
+  const url = 'http://www.mangabz.com/m19561/chapterimage.ashx?cid=19561&page=1&key=&_cid=19561&_mid=280&_dt=2021-03-12+203A21%3A27%3A30&_sign=56a8ed542ee44d45b542a249b7683d68'
+  // const url = 'http://www.mangabz.com/m19561/'
+  const res = await requestPromise(`${url}`,{reqType:'http',headers:{}})
+  const result = eval(res)
+  console.log('---res---')
+  console.log(res)
 
-  // console.log('---result---')
-  // console.log(result)
 
 }
 
 // getChaptersData()
 // getImagesData()
 // downAllImages()
-test()
+// test()

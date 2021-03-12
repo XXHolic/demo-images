@@ -49,6 +49,15 @@ const formatChapter = (data,type) => {
       link: page
     }
   }
+  if(type == 3) {
+    const pattern = new RegExp('var isVip =+.*?reseturl','g')
+    const totalStrMatch = data.match(pattern)
+    const totalStr = totalStrMatch[0]
+    const codeStr = totalStr.substring(0,totalStr.indexOf('reseturl'))
+    const codeFormat = `(function(){${codeStr}return{total:MANGABZ_IMAGE_COUNT,cid:MANGABZ_CID,mid:MANGABZ_MID,title:MANGABZ_CTITLE,sign:MANGABZ_VIEWSIGN,dt:MANGABZ_VIEWSIGN_DT}})()`
+    const msgObj = eval(codeFormat)
+    chapterLink = msgObj
+  }
 
   return chapterLink
 }
