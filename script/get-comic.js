@@ -89,8 +89,8 @@ async function getImagesData(type) {
   }
   const chapterNum = chapterList.length
   let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始
-  // while (startDire <= chapterNum) {
-  while (startDire <= 1) { // 测试用
+  while (startDire <= chapterNum) {
+  // while (startDire <= 1) { // 测试用
     let startDownChapter = chapterList[startDire-1]
     let preBaseRoot = `${baseRoot}`
     if (useWay2) {

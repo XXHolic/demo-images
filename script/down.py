@@ -40,9 +40,13 @@ def down_img(localFold,data):
 
     imgCount = img_index+1
     filename = fold_name + str(imgCount) + utils.getImageType(img_item)
+    if (emptyRecord.count(img_item) != 0):
+      print('chapter '+localFold + str(imgCount) + ' record failed')
+      img_index += 1
+      continue
 
     if (os.path.exists(filename)):
-      print(str(img_index)+' exists')
+      print('chapter '+localFold + str(imgCount)+' exists')
     else:
       res = retryReq.get(img_item,timeout=60)
       # print(res.status_code)
