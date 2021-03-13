@@ -84,7 +84,10 @@
     <div class="trigger-tool" id="triggerTool"></div>
   </div>
   <script>
-    const comicName = 'dianJuRen'
+    let comicName = 'diYuLe'
+    const comicOnlyName = comicName
+    const comicType = getQueryStringArgs('type');
+    comicName = `${comicName}/${comicType}`
     const prefix = `../comic/${comicName}`
     const curNum = document.querySelector('#curNum');
     const container = document.querySelector('#imgList');
@@ -196,7 +199,7 @@
       nextChapter.addEventListener('click',function(){
         const chapter = getQueryStringArgs('chapter');
         const nextNum = Number(chapter) + 1;
-        window.location.href = `./detail.html?chapter=${nextNum}`
+        window.location.href = `./detail.html?type=${comicType}&chapter=${nextNum}`
       })
 
       const jump = document.querySelector('#jump');
@@ -273,6 +276,7 @@
       }
       // 记录看到的章节历史
       localStorage.setItem(comicName,chapter);
+      localStorage.setItem(comicOnlyName,`type=${comicType}&chapter=${chapter}`);
 
       const deviceType = getDeviceType();
       if (deviceType == 'phone') {
