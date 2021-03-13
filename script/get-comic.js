@@ -21,9 +21,9 @@ const {
 } = require('./helper')
 
 const baseRoot = '../comic/diYuLe/'
-const comicMark = '280bz'
+const comicMark = '31737'
 // const chapterReqUrl = "https://www.ykmh.com/manhua/" + comicMark + '/'
-const site = 'http://www.mangabz.com'
+const site = 'http://www.wuqimh.com'
 const chapterReqUrl = site + "/" + comicMark + '/'
 const chapterFile = baseRoot + 'chapter.json'
 const imagesJsonFileName = 'images.json'
@@ -33,9 +33,9 @@ const baseEmptyJsonFile = baseRoot+'empty.json'
 
 // 获取所有章节数据，并存放到本地
 async function getChaptersData() {
-  const result = await requestPromise(`${chapterReqUrl}`,{reqType:'http',headers:{"cookie":"mangabz_lang=2"}})
+  const result = await requestPromise(`${chapterReqUrl}`,{reqType:'http'})
 
-  const linkReg = getChapterContainerReg(3)
+  const linkReg = getChapterContainerReg(1)
   const matchResult = result.match(linkReg)
   // console.log('---matchResult---')
   // console.log(matchResult)
@@ -52,7 +52,7 @@ async function getChaptersData() {
 
     if (linkMatch && linkMatch.length) {
       // 先按照 正式连载,短篇,卷附录，单行本, 进行分类，然后再分别放入数组
-      const allLink = classifyData(linkMatch)
+      const allLink = classifyData(linkMatch,4)
       // let allLink = linkMatch.reduce((acc,cur) => {
       //   acc.push(formatChapter(cur,1))
       //   return acc
@@ -83,7 +83,7 @@ async function getImagesData(type) {
     // console.log('---chapterList---')
     // console.log(chapterList)
   let chapterList = fileData
-  const classify = 'serial'
+  const classify = 'serial' // 有 4 个值 serial short single appendix
   if (useWay2) {
     chapterList = fileData[classify]
   }
@@ -126,11 +126,14 @@ async function getImagesData(type) {
     }
 
     imageData = getChapterImageData(res,2)
+    if (!imageData.total) {
+      return;
+    }
     const imagesContent = JSON.stringify(imageData)
 
     await writeLocalFile(imagesFile,imagesContent)
     await writeLocalFile(titleFile,imageData.title)
-    console.log(`get chapter ${startDire-1} all image src`)
+    console.log(`get chapter ${startDire} all image src`)
     startDire += 1
   }
 }
@@ -194,6 +197,6 @@ async function test () {
 }
 
 // getChaptersData()
-// getImagesData()
+getImagesData(2)
 // downAllImages()
 // test()

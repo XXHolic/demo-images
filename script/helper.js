@@ -27,6 +27,8 @@ const getChapterReg = (type,comicMark) => {
     return new RegExp('href="\/manhua\/'+comicMark+'\/+.*?html','g')
     case 3:
     return new RegExp('<a href="\/+.*?\/a>','g')
+    case 4:
+    return new RegExp('<a href="\/'+comicMark+'\/+.*?\/a>','g')
   }
 }
 
@@ -58,43 +60,28 @@ const formatChapter = (data,type) => {
     const msgObj = eval(codeFormat)
     chapterLink = msgObj
   }
+  if (type === 4) {
+    // <a href="/31737/051.html" title="42话" class="status0" target="_blank"><span>42话<i>22p</i></span></a>
+    const matchResult = data.match(/\/+.*?.html/g)
+    const page = matchResult[0]
+    const titleMatch = data.match(/title="+.*?"/g)
+    // console.log('data',data)
+    // console.log('titleMatch',titleMatch)
+    // 有的可能没有数字，就设为 0
+    const orderMatch = titleMatch ? titleMatch[0].match(/\d{1,3}/g):[0]
+    const order = orderMatch?Number(orderMatch[0]):0
+
+    const pattern = /<(\S*?)[^>]*>.*?|<.*? \/>/g
+    const value1 = data.replace(pattern,'')
+    const value2 = value1.replace(/\s+/g,'')
+    chapterLink = {
+      name: value2,
+      link: page,
+      order: order
+    }
+  }
 
   return chapterLink
-}
-
-const classifyData = (data,type) => {
-  // 常见的有 serial-正式连载，short-短篇，single-单行本，appendix-卷附录，
-  let intiData = {
-    serial:[],
-    short:[],
-    single:[],
-    appendix:[],
-  }
-  for (let index = 0; index < data.length; index++) {
-    const element = data[index];
-    if (element.indexOf('短篇')>-1 || element.indexOf('番外')>-1) {
-      const formatData = formatChapter(element,2)
-      intiData.short.unshift(formatData)
-      continue;
-    }
-    if (element.indexOf('卷')>-1) {
-      const formatData = formatChapter(element,2)
-      intiData.appendix.unshift(formatData)
-      continue;
-    }
-    if (element.indexOf('单行')>-1) {
-      const formatData = formatChapter(element,2)
-      intiData.single.unshift(formatData)
-      continue;
-    }
-
-    const formatData = formatChapter(element,2)
-    intiData.serial.unshift(formatData)
-
-  }
-
-  return intiData
-
 }
 
 const sortChapterLink = (data,type) => {
@@ -108,7 +95,58 @@ const sortChapterLink = (data,type) => {
       return aNum - bNum
     })
   }
+  if (type === 2) {
+    // 有的情况可以根据数字大小排序
+    return data.sort((a,b) => {
+      const aNum = a.order
+      const bNum = b.order
+      return aNum - bNum
+    })
+  }
 }
+
+const classifyData = (data,type) => {
+  // 常见的有 serial-正式连载，short-短篇，single-单行本，appendix-卷附录，
+  let intiData = {
+    serial:[],
+    short:[],
+    single:[],
+    appendix:[],
+  }
+  for (let index = 0; index < data.length; index++) {
+    const element = data[index];
+    if (element.indexOf('短篇')>-1 || element.indexOf('番外')>-1) {
+      const formatData = formatChapter(element,type)
+      intiData.short.unshift(formatData)
+      continue;
+    }
+    if (element.indexOf('卷')>-1) {
+      const formatData = formatChapter(element,type)
+      intiData.appendix.unshift(formatData)
+      continue;
+    }
+    if (element.indexOf('单行')>-1) {
+      const formatData = formatChapter(element,type)
+      intiData.single.unshift(formatData)
+      continue;
+    }
+
+    const formatData = formatChapter(element,type)
+    intiData.serial.unshift(formatData)
+
+  }
+
+  // 有的网站并不是按照正确顺序排列，所以还是排序一下
+  intiData.serial = sortChapterLink(intiData.serial,2)
+  intiData.short = sortChapterLink(intiData.short,2)
+  intiData.single = sortChapterLink(intiData.single,2)
+  intiData.appendix = sortChapterLink(intiData.appendix,2)
+
+  return intiData
+
+}
+
+
 
 const creatClassifyFold = (data,baseRoot,type) => {
   if (type == 1) {
@@ -163,29 +201,32 @@ const getChapterImageData = (pageData,type) => {
   }
 
   if (type === 2) {
-    const imagePrefix = 'https://pic.w1fl.com'
-    const reg = /<script>;var chapterImages([\s\S]*?)<\/script*?>/g
+    const reg = /eval([\s\S]*?)\$/g
     const matchResult = pageData.match(reg)
     if (matchResult && matchResult.length) {
-      const content = matchResult[0];
-      const contentSplit = content.split(';')
-      // console.log('---contentSplit----')
-      // console.log(contentSplit)
-      const contentListStr = contentSplit[1]
-      // const eleLen = contentListStr.length;
-      const codeStr = contentListStr.substring(20)
+      let content = matchResult[0];
+      const endIndex = content.lastIndexOf(')')
+      let mainCode = content.substring(5,endIndex)
+      const codeStr = `(${mainCode})`
       // console.log('---codeStr---')
       // console.log(codeStr)
+      // console.log(mainCode.length)
       let result = eval(codeStr)
-      result = result.map(ele => {
-        return `${imagePrefix}${ele}`
-      })
+      // console.log('---result---')
+      // console.log(result)
 
-      const titleContent = contentSplit[5]
-      const title = titleContent.substring(17,titleContent.length-1)
-      data.list = result
-      data.total = result.length
-      data.title = title
+      const first = result.indexOf('{')
+      const last = result.lastIndexOf('}')
+
+      let newStr = result.substring(first,last+1)
+      newStr = newStr.replace(/'/g,'"')
+      // console.log('---newStr---')
+      // console.log(newStr)
+      const mainObj = JSON.parse(newStr)
+      const {ctitle,fs} = mainObj
+      data.list = fs
+      data.total = fs.length
+      data.title = ctitle
     }
   }
 
