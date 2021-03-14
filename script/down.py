@@ -78,7 +78,7 @@ def downAllImages(type):
     fileData = json.loads(content)
     chapterList = fileData
     # 有 4 个值 serial short single appendix
-    classify = 'serial'
+    classify = 'appendix'
     if (type == 2):
       chapterList = fileData[classify]
     chapterNum = len(chapterList)

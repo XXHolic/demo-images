@@ -30,6 +30,7 @@ const imagesJsonFileName = 'images.json'
 const titleFileName = 'title.md'
 const emptyJsonFileName = 'empty.json'
 const baseEmptyJsonFile = baseRoot+'empty.json'
+const baseFailJsonFile = baseRoot+'down-fail.json'
 
 // 获取所有章节数据，并存放到本地
 async function getChaptersData() {
@@ -83,7 +84,7 @@ async function getImagesData(type) {
     // console.log('---chapterList---')
     // console.log(chapterList)
   let chapterList = fileData
-  const classify = 'serial' // 有 4 个值 serial short single appendix
+  const classify = 'appendix' // 有 4 个值 serial short single appendix
   if (useWay2) {
     chapterList = fileData[classify]
   }
@@ -118,6 +119,60 @@ async function getImagesData(type) {
       console.log(`chapter fail ${startDownChapter}`)
       baseFail.push(startDownChapter)
       writeLocalFile(baseEmptyJsonFile,JSON.stringify(baseFail))
+    })
+
+    if (!res) {
+      startDire += 1
+      continue;
+    }
+
+    imageData = getChapterImageData(res,2)
+    if (!imageData.total) {
+      return;
+    }
+    const imagesContent = JSON.stringify(imageData)
+
+    await writeLocalFile(imagesFile,imagesContent)
+    await writeLocalFile(titleFile,imageData.title)
+    console.log(`get chapter ${startDire} all image src`)
+    startDire += 1
+  }
+}
+
+// 对获取失败的章节的处理,未完成
+async function getDownFailImagesData(type) {
+  const useWay2 = type == 2;
+  const fileData = readJsonFile(baseFailJsonFile)
+
+    // console.log('---chapterList---')
+    // console.log(chapterList)
+  const classify = 'appendix' // 有 4 个值 serial short single appendix
+  chapterList = fileData[classify]
+  const chapterNum = chapterList.length
+  let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始
+  while (startDire <= chapterNum) {
+  // while (startDire <= 1) { // 测试用
+    let startDownChapterObj = chapterList[startDire-1]
+    let filePos = startDownChapterObj.file
+    startDownChapterUrl = startDownChapterObj.link
+    let preBaseRoot = `${baseRoot}${classify}/`
+
+    const pathPre = `${preBaseRoot}${filePos}/`
+    const imagesFile = `${pathPre}${imagesJsonFileName}`
+    const titleFile = `${pathPre}${titleFileName}`
+    // if (fs.existsSync(titleFile)) {
+      // console.log(`chapter ${startDire} all image src exist`)
+      // startDire += 1
+      // continue;
+    // }
+    let url = `${chapterReqUrl}${startDownChapterUrl}`
+    let imageData = {}
+    let reqOptions = {}
+    if (useWay2) {
+      reqOptions = {reqType:'http'}
+    }
+    const res = await requestPromise(url,reqOptions).catch((e) => {
+      console.log(`chapter fail ${filePos}`)
     })
 
     if (!res) {

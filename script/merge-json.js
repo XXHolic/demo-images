@@ -3,7 +3,7 @@ var path = require("path");
 var currentPath = process.cwd(); // 获取当前执行路径
 
 var dealPath = '../comic/diYuLe/serial'
-var failFilePath = '../comic/diYuLe/down-fail.json'
+var failFilePath = '../comic/diYuLe/down-fail.json' // 合并失败的文件
 var fileArr = []; // 存储目标文件路径
 
 /**
@@ -47,10 +47,14 @@ function combineFile(arr) {
       var contentObj = JSON.parse(str);
       if (contentObj && contentObj.length) {
         const eleMath = ele.match(/\d{1,5}/g)
-        obj.push(eleMath[0])
+        const temObj = {
+          file:Number(eleMath[0]),
+          link:''
+        }
+        obj.push(temObj)
       }
     });
-  return JSON.stringify(obj);
+  return JSON.stringify(sortChapter(obj));
 }
 
 /**
@@ -66,7 +70,15 @@ function deleDom(filePath) {
   return bin.toString("utf-8");
 }
 
+function sortChapter(data) {
+  return data.sort((a,b) => {
+    return (Number(a.file) - Number(b.file))
+  })
+}
+
 readDir(dealPath);
+
+
 
 var jsonStr = combineFile(fileArr);
 
