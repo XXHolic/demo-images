@@ -6,6 +6,7 @@ const {
   writeLocalFile,
   requestPromise,
   readJsonFile,
+  regMatch,
 } = require('./utils')
 
 const getChapterContainerReg = (type) => {
@@ -13,7 +14,7 @@ const getChapterContainerReg = (type) => {
     case 1:
     return /<div class="chapter-list cf mt10"+.*?>([\s\S]*?)<\/div*?>/g
     case 2:
-    return /<div class="zj_list_con autoHeight"+.*?>([\s\S]*?)<\/div*?>/g
+    return /<ol class="links-of-books num_div"+.*?>([\s\S]*?)<\/ol*?>/g
     case 3:
     return /<div class="detail-list-form-con"+.*?>([\s\S]*?)<\/div*?>/g
   }
@@ -24,7 +25,7 @@ const getChapterReg = (type,comicMark) => {
     case 1:
     return new RgExp('href="\/comic\/'+comicMark+'\/+.*?html','g')
     case 2:
-    return new RegExp('href="\/manhua\/'+comicMark+'\/+.*?html','g')
+    return new RegExp('<a class="fixed-a-es" href="\/manhua\/'+comicMark+'\/+.*?\/a>','g')
     case 3:
     return new RegExp('<a href="\/+.*?\/a>','g')
     case 4:
@@ -79,6 +80,14 @@ const formatChapter = (data,type) => {
       link: page,
       order: order
     }
+  }
+  if (type === 5) {
+    // <img class="img-fluid show-pic src="" />
+    const imgReg = /<img class="img-fluid show-pic"+.*?\/>/g
+    const imgStr = regMatch(data,imgReg)
+    const srcReg = /"http+.*?"/g
+    const imgSrcStr = regMatch(imgStr,srcReg)
+    chapterLink = imgSrcStr.substring(1,imgSrcStr.length-1)
   }
 
   return chapterLink
@@ -158,7 +167,7 @@ const creatClassifyFold = (data,baseRoot,type) => {
 }
 
 // 获取每个章节下所有图片链接
-const getChapterImageData = (pageData,type) => {
+const getChapterImageData = (pageData,type,url) => {
   let data = {
     list:[],
     total:0,
@@ -229,6 +238,23 @@ const getChapterImageData = (pageData,type) => {
       data.title = ctitle
     }
   }
+
+  if (type === 3) {
+    // <div class="d-none vg-r-data"
+    // <img class="img-fluid show-pic
+    const titleReg = /<title>+.*?<\/title>/g
+    const titleStr = regMatch(pageData,titleReg)
+    const divReg = /<div class="d-none vg-r-data"+.*?>([\s\S]*?)<\/div*?>/g
+    const divStr = regMatch(pageData,divReg)
+    const totalReg = /data-total="\d{1,4}"/g
+    const totalStr = regMatch(divStr,totalReg)
+    const totalNumReg = /\d{1,4}/g
+    const totalNum = Number(regMatch(totalStr,totalNumReg))
+    data.total = totalNum
+    data.link = url
+    data.title = titleStr
+  }
+  // console.log('data',data)
 
   return data;
 }

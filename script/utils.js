@@ -83,6 +83,11 @@ function removeRepeat(data) {
   return Array.from(new Set(data))
 }
 
+function regMatch(data,reg) {
+  const matchResult = data.match(reg) || []
+  return matchResult[0]
+}
+
 
 module.exports = {
   requestPromise,
@@ -90,4 +95,5 @@ module.exports = {
   writeLocalFile,
   readJsonFile,
   removeRepeat,
+  regMatch,
 }
