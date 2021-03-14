@@ -88,8 +88,8 @@ async function getImagesData() {
   const chapterList = fileData[classify]
   const chapterNum = chapterList.length
   let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始
-  // while (startDire <= chapterNum) {
-  while (startDire <= 1) { // 测试用
+  while (startDire <= chapterNum) {
+  // while (startDire <= 1) { // 测试用
     let startDownChapterObj = chapterList[startDire-1]
     const startDownChapter = startDownChapterObj.link
     const preBaseRoot = `${baseRoot}${classify}/`
@@ -139,15 +139,24 @@ async function getImages() {
   const preBaseRoot = `${baseRoot}${classify}/`
   const chapterList = fileData[classify]
   const chapterNum = chapterList.length
-  let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始
+  let startDire = 67 // 跟本地的文件夹命名顺序一致，从 1 开始
   // while (startDire <= chapterNum) {
-  while (startDire <= 1) { // 测试用
+  while (startDire <= 67) { // 测试用
     let imageData = {
       list:[],
       total:0,
       title:''
     }
     const pathPre = `${preBaseRoot}${startDire}/`
+    const imagesFile = `${pathPre}${imagesJsonFileName}`
+
+    if (fs.existsSync(imagesFile) ) {
+      console.log(`all image src exist ${imagesFile} `)
+      startDire += 1
+      continue;
+    }
+
+
     const failFilePath = `${pathPre}${emptyJsonFileName}`
     let failData = readJsonFile(failFilePath)
     const singleChapterFileData = readJsonFile(`${pathPre}${singleChapterFileName}`)
@@ -173,12 +182,12 @@ async function getImages() {
         continue;
       }
 
-      imageData.list.push(formatChapter(res,5))
+      imageData.list[index-1] = (formatChapter(res,5))
       console.log(`get image src success ${index} - ${pathPre}`)
     }
 
     const imagesContent = JSON.stringify(imageData)
-    const imagesFile = `${pathPre}${imagesJsonFileName}`
+
     await writeLocalFile(imagesFile,imagesContent)
     console.log(`get all image src success ${pathPre}`)
     startDire += 1
