@@ -32,6 +32,7 @@ const emptyJsonFileName = 'empty.json'
 const singleChapterFileName = 'chapter.json' // 这是适用于每张图片源都要单独去请求的情况
 const baseEmptyJsonFile = baseRoot+'empty.json'
 const baseFailJsonFile = baseRoot+'down-fail.json'
+const globalClassify = 'single' // 有 4 个值 serial short single appendix
 
 // 获取所有章节数据，并存放到本地
 async function getChaptersData() {
@@ -84,7 +85,7 @@ async function getImagesData() {
   let baseFail = readJsonFile(baseEmptyJsonFile)
     // console.log('---chapterList---')
     // console.log(chapterList)
-  const classify = 'serial' // 有 4 个值 serial short single appendix
+  const classify = globalClassify
   const chapterList = fileData[classify]
   const chapterNum = chapterList.length
   let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始
@@ -135,7 +136,7 @@ async function getImagesData() {
 // 每张图片都要单独请求一个页面的情况
 async function getImages() {
   const fileData = readJsonFile(chapterFile)
-  const classify = 'serial' // 有 4 个值 serial short single appendix
+  const classify = globalClassify
   const preBaseRoot = `${baseRoot}${classify}/`
   const chapterList = fileData[classify]
   const chapterNum = chapterList.length
@@ -202,7 +203,7 @@ async function getDownFailImagesData(type) {
 
     // console.log('---chapterList---')
     // console.log(chapterList)
-  const classify = 'appendix' // 有 4 个值 serial short single appendix
+  const classify = globalClassify
   chapterList = fileData[classify]
   const chapterNum = chapterList.length
   let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始

@@ -33,14 +33,19 @@
       color: rgba(0,0,0,.87);
       font-size: 14px
     }
+    .list-item.reset {
+      margin:0;
+    }
     .list-item:hover {
       color: rgba(0,0,0,.87);
       background-color: #edfaff;
     }
+    h3 {padding-left: 10px;}
   </style>
 </head>
 <body>
   <h2 class="tc">name</h2>
+  <div id='viewHistory' class="df" style="padding-left: 10px;align-items: center"></div>
   <h3>连载</h3>
   <ul id='chapterList' class="list">
     暂无
@@ -57,7 +62,7 @@
   <ul id='appendix' class="list">
     暂无
   </ul>
-  <div id='viewHistory' class="df"></div>
+
   <script>
     const comicName = 'diYuLe'
 
@@ -97,7 +102,7 @@
       const typeEndIndex = viewHistory.indexOf('&')
       const numEndIndex = viewHistory.lastIndexOf('=')
       const showText = viewHistory.substring(5,typeEndIndex) + '-'+viewHistory.substring(numEndIndex+1)
-      document.querySelector('#viewHistory').innerHTML = `上次看到: <a class="list-item" href='./detail.html?${viewHistory}'>${showText}</a>`;
+      document.querySelector('#viewHistory').innerHTML = `<div>上次看到:</div> <a class="list-item reset" href='./detail.html?${viewHistory}'>${showText}</a>`;
       getChapterList()
 
     }
