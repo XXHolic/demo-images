@@ -20,10 +20,10 @@ const {
   getImageHeader,
 } = require('./helper')
 
-const baseRoot = '../comic/yanQuan/'
-const comicMark = '2664'
+const baseRoot = '../comic/yueDingDeMengHuanDao/'
+const comicMark = 'yuedingdemenghuandao'
 // const chapterReqUrl = "https://www.manhuadb.com/manhua/" + comicMark + '/'
-const site = 'https://www.manhuadb.com'
+const site = 'https://www.ykmh.com'
 const chapterReqUrl = site + "/manhua/" + comicMark + '/'
 const chapterFile = baseRoot + 'chapter.json'
 const imagesJsonFileName = 'images.json'
@@ -32,7 +32,7 @@ const emptyJsonFileName = 'empty.json'
 const singleChapterFileName = 'chapter.json' // 这是适用于每张图片源都要单独去请求的情况
 const baseEmptyJsonFile = baseRoot+'empty.json'
 const baseFailJsonFile = baseRoot+'down-fail.json'
-const globalClassify = 'single' // 有 4 个值 serial short single appendix
+const globalClassify = 'short' // 有 4 个值 serial short single appendix
 
 // 获取所有章节数据，并存放到本地
 async function getChaptersData() {
@@ -44,12 +44,12 @@ async function getChaptersData() {
   // console.log(matchResult)
 
   if (matchResult && matchResult.length) {
-    const chapterReg = getChapterReg(2,comicMark)
+    const chapterReg = getChapterReg(3,comicMark)
     // 默认先取第一个，一个结束后，手动修改
     const chapterLink = matchResult[0]
     const linkMatch = chapterLink.match(chapterReg)
-    // console.log('---linkMatch---')
-    // console.log(linkMatch)
+    console.log('---linkMatch---')
+    console.log(linkMatch)
 
     // return;
 
@@ -99,7 +99,7 @@ async function getImagesData() {
 
     const pathPre = `${preBaseRoot}${startDire}/`
     const imagesFile = `${pathPre}${imagesJsonFileName}`
-    const singleChapterFile = `${pathPre}${singleChapterFileName}` // 适用每张图片都要单独请求一个页面的情况
+    // const singleChapterFile = `${pathPre}${singleChapterFileName}` // 适用每张图片都要单独请求一个页面的情况
     const titleFile = `${pathPre}${titleFileName}`
     if (fs.existsSync(titleFile) || baseFail.includes(startDownChapter)) {
       // console.log(`chapter ${startDire} all image src exist`)
@@ -119,14 +119,14 @@ async function getImagesData() {
       continue;
     }
 
-    imageData = getChapterImageData(res,3,url)
+    imageData = getChapterImageData(res,4,url)
     if (!imageData.total) {
       return;
     }
     const imagesContent = JSON.stringify(imageData)
 
-    // await writeLocalFile(imagesFile,imagesContent)
-    await writeLocalFile(singleChapterFile,imagesContent)
+    await writeLocalFile(imagesFile,imagesContent)
+    // await writeLocalFile(singleChapterFile,imagesContent)
     await writeLocalFile(titleFile,imageData.title)
     console.log(`get chapter ${startDire} all image src`)
     startDire += 1
@@ -256,8 +256,8 @@ async function downAllImages() {
     // console.log(chapterList)
   const chapterNum = chapterList.length
   let startDire = 1
-  while (startDire <= chapterNum) {
-  // while (startDire <= 204) { // 测试用
+  // while (startDire <= chapterNum) {
+  while (startDire <= 1) { // 测试用
     const pre = `${baseRoot}${startDire}/`
     const emptyJsonFile = `${pre}${emptyJsonFileName}`
     const imgListFile = `${pre}${imagesJsonFileName}`
@@ -309,7 +309,7 @@ async function test () {
 }
 
 // getChaptersData()
-// getImagesData()
-getImages()
+getImagesData()
+// getImages()
 // downAllImages()
 // test()

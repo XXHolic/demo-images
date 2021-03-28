@@ -14,7 +14,7 @@ const getChapterContainerReg = (type) => {
     case 1:
     return /<div class="chapter-list cf mt10"+.*?>([\s\S]*?)<\/div*?>/g
     case 2:
-    return /<ol class="links-of-books num_div"+.*?>([\s\S]*?)<\/ol*?>/g
+    return /<ul id="chapter-list-1"+.*?>([\s\S]*?)<\/ul*?>/g
     case 3:
     return /<div class="detail-list-form-con"+.*?>([\s\S]*?)<\/div*?>/g
   }
@@ -23,11 +23,11 @@ const getChapterContainerReg = (type) => {
 const getChapterReg = (type,comicMark) => {
   switch(type){
     case 1:
-    return new RgExp('href="\/comic\/'+comicMark+'\/+.*?html','g')
+    return new RegExp('href="\/manhua\/'+comicMark+'\/+.*?html','g')
     case 2:
-    return new RegExp('<a class="fixed-a-es" href="\/manhua\/'+comicMark+'\/+.*?\/a>','g')
+    return new RegExp('<a href="\/manhua\/'+comicMark+'\/+.*?\/a>','g')
     case 3:
-    return new RegExp('<a href="\/+.*?\/a>','g')
+    return new RegExp('<a href="\/+.*?>([\\s\\S]*?)<\/a>','g')
     case 4:
     return new RegExp('<a href="\/'+comicMark+'\/+.*?\/a>','g')
   }
@@ -65,11 +65,11 @@ const formatChapter = (data,type) => {
     // <a href="/31737/051.html" title="42话" class="status0" target="_blank"><span>42话<i>22p</i></span></a>
     const matchResult = data.match(/\/+.*?.html/g)
     const page = matchResult[0]
-    const titleMatch = data.match(/title="+.*?"/g)
+    // const titleMatch = data.match(/title="+.*?"/g)
     // console.log('data',data)
     // console.log('titleMatch',titleMatch)
     // 有的可能没有数字，就设为 0
-    const orderMatch = titleMatch ? titleMatch[0].match(/\d{1,3}/g):[0]
+    const orderMatch = page.match(/\d{1,7}/g)
     const order = orderMatch?Number(orderMatch[0]):0
 
     const pattern = /<(\S*?)[^>]*>.*?|<.*? \/>/g
@@ -253,6 +253,35 @@ const getChapterImageData = (pageData,type,url) => {
     data.total = totalNum
     data.link = url
     data.title = titleStr
+  }
+
+  if (type === 4) {
+    // <script>;var chapterImages =
+    const reg = /<script>;var chapterImages([\s\S]*?)<\/script*?>/g
+    const matchResult = pageData.match(reg)
+    // console.log('---matchResult---')
+    // console.log(matchResult)
+    const titleReg = /pageTitle+.*?;/g
+    const titleStr = regMatch(pageData,titleReg)
+    const titleStrSplit = titleStr.split('=')
+    let title = titleStrSplit[1]
+    title = title.substring(2,title.length-2)
+
+    const chapterReg = /chapterImages+.*?;/g
+    const chapterStr = regMatch(pageData,chapterReg)
+    const chapterStrSplit = chapterStr.split('=')
+    const chapterArrStr = chapterStrSplit[1]
+    const chapterArr =JSON.parse(chapterArrStr.substring(1,chapterArrStr.length-1))
+    const imgPre = 'https://pic.w1fl.com'
+
+    const listData = chapterArr.reduce((acc,cur) => {
+      const url = `${imgPre}${cur}`
+      acc.push(url)
+      return acc;
+    },[])
+    data.list = listData
+    data.total = chapterArr.length
+    data.title = title
   }
   // console.log('data',data)
 
