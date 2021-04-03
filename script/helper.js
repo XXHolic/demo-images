@@ -36,9 +36,21 @@ const getChapterReg = (type,comicMark) => {
 const formatChapter = (data,type) => {
   let chapterLink = ''
   if (type === 1) {
-    const valueSplit = data.split('/')
-    const valueSplit2Len = valueSplit.length
-    chapterLink = valueSplit[valueSplit2Len-1]
+    // <a href="/manhua/jinjidejuren/57916.html"><span class="list_con_tb"></span><span class="list_con_zj">138话</span><span class="list_con_tips"></span></a>
+    const matchResult = data.match(/\/+.*?.html/g)
+    const page = matchResult[0]
+    // 有的可能没有数字，就设为 0
+    const orderMatch = page.match(/\d{1,7}/g)
+    const order = orderMatch?Number(orderMatch[0]):0
+
+    const pattern = /<(\S*?)[^>]*>.*?|<.*? \/>/g
+    const value1 = data.replace(pattern,'')
+    const value2 = value1.replace(/\s+/g,'')
+    chapterLink = {
+      name: value2,
+      link: page,
+      order: order
+    }
   }
   if (type === 2) {
     // <a href="/m132667/" class="detail-list-form-item" title="" target="_blank">第106话<span>（19P）</span></a>
@@ -124,7 +136,7 @@ const classifyData = (data,type) => {
   }
   for (let index = 0; index < data.length; index++) {
     const element = data[index];
-    if (element.indexOf('短篇')>-1 || element.indexOf('番外')>-1) {
+    if (element.indexOf('短篇')>-1 || element.indexOf('番外')>-1||element.indexOf('同人')>-1 || element.indexOf('小四格')>-1) {
       const formatData = formatChapter(element,type)
       intiData.short.unshift(formatData)
       continue;
@@ -137,6 +149,10 @@ const classifyData = (data,type) => {
     if (element.indexOf('单行')>-1) {
       const formatData = formatChapter(element,type)
       intiData.single.unshift(formatData)
+      continue;
+    }
+
+    if (element.indexOf('before')>-1) {
       continue;
     }
 

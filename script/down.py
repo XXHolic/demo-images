@@ -11,9 +11,10 @@ retryReq.mount('http://', HTTPAdapter(max_retries=2))
 retryReq.mount('https://', HTTPAdapter(max_retries=2))
 
 
-baseRoot= '../comic/yueDingDeMengHuanDao/'
+baseRoot= '../comic/demo/'
 # baseRoot= '../comic//'
-chapterFile = baseRoot + 'chapter.json'
+# 有 4 个值 serial short single appendix
+chapterFile = baseRoot + 'serial.json'
 imagesJsonFileName = 'images.json'
 emptyJsonFileName = 'empty.json'
 totalJsonFileName = 'total.json'
@@ -80,7 +81,7 @@ def downAllImages(type):
     # 有 4 个值 serial short single appendix
     classify = 'serial'
     if (type == 2):
-      chapterList = fileData[classify]
+      chapterList = fileData['list']
     chapterNum = len(chapterList)
     startDire = 1
     # while startDire <= chapterNum:

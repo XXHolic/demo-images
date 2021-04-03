@@ -20,19 +20,24 @@ const {
   getImageHeader,
 } = require('./helper')
 
-const baseRoot = '../comic/yueDingDeMengHuanDao/'
-const comicMark = 'yuedingdemenghuandao'
+const baseRoot = '../comic/demo/'
+const comicMark = 'jinjidejuren'
 // const chapterReqUrl = "https://www.manhuadb.com/manhua/" + comicMark + '/'
 const site = 'https://www.ykmh.com'
 const chapterReqUrl = site + "/manhua/" + comicMark + '/'
-const chapterFile = baseRoot + 'chapter.json'
+const chapterFile = baseRoot + 'chapter.json' // 包含总的信息，也方便获取解析
 const imagesJsonFileName = 'images.json'
 const titleFileName = 'title.md'
 const emptyJsonFileName = 'empty.json'
 const singleChapterFileName = 'chapter.json' // 这是适用于每张图片源都要单独去请求的情况
 const baseEmptyJsonFile = baseRoot+'empty.json'
 const baseFailJsonFile = baseRoot+'down-fail.json'
-const globalClassify = 'short' // 有 4 个值 serial short single appendix
+const globalClassify = 'serial' // 有 4 个值 serial short single appendix
+// 不同的部分可能来自不同的源，所以单独分开
+const serialFile = baseRoot + 'serial.json'
+const shortFile = baseRoot + 'short.json'
+const singleFile = baseRoot + 'single.json'
+const appendixFile = baseRoot + 'appendix.json'
 
 // 获取所有章节数据，并存放到本地
 async function getChaptersData() {
@@ -48,23 +53,25 @@ async function getChaptersData() {
     // 默认先取第一个，一个结束后，手动修改
     const chapterLink = matchResult[0]
     const linkMatch = chapterLink.match(chapterReg)
-    console.log('---linkMatch---')
-    console.log(linkMatch)
+    // console.log('---linkMatch---')
+    // console.log(linkMatch)
 
     // return;
 
     if (linkMatch && linkMatch.length) {
       // 先按照 正式连载,短篇,卷附录，单行本, 进行分类，然后再分别放入数组
-      const allLink = classifyData(linkMatch,4)
-      // let allLink = linkMatch.reduce((acc,cur) => {
-      //   acc.push(formatChapter(cur,1))
-      //   return acc
-      // },[])
+      const allLink = classifyData(linkMatch,1)
     // console.log('---allLink---')
     // console.log(allLink)
       // 有的情况可以根据数字大小排序
       // allLink = sortChapterLink(allLink,1)
+      // 综合的数据
       writeLocalFile(chapterFile,JSON.stringify(allLink))
+      // 可以根据情况写入不同部分的文件
+      writeLocalFile(serialFile,JSON.stringify({list:allLink.serial}))
+      writeLocalFile(shortFile,JSON.stringify({list:allLink.short}))
+      writeLocalFile(singleFile,JSON.stringify({list:allLink.single}))
+      writeLocalFile(appendixFile,JSON.stringify({list:allLink.appendix}))
       console.log('get all chapter links success')
     }
 
@@ -78,19 +85,21 @@ async function getChaptersData() {
 async function getImagesData() {
   // 有就用
   // globalExpand()
-  const fileData = readJsonFile(chapterFile)
+  // 四个 serialFile shortFile singleFile appendixFile
+  const filePath = serialFile
+  const fileData = readJsonFile(filePath)
 
-  creatClassifyFold(fileData,baseRoot,1)
 
   let baseFail = readJsonFile(baseEmptyJsonFile)
-    // console.log('---chapterList---')
-    // console.log(chapterList)
+  // console.log('---chapterList---')
+  // console.log(chapterList)
   const classify = globalClassify
-  const chapterList = fileData[classify]
+  createFold(`${baseRoot}${classify}`)
+  const chapterList = fileData.list
   const chapterNum = chapterList.length
   let startDire = 1 // 跟本地的文件夹命名顺序一致，从 1 开始
-  while (startDire <= chapterNum) {
-  // while (startDire <= 1) { // 测试用
+  // while (startDire <= chapterNum) {
+  while (startDire <= 1) { // 测试用
     let startDownChapterObj = chapterList[startDire-1]
     const startDownChapter = startDownChapterObj.link
     const preBaseRoot = `${baseRoot}${classify}/`
@@ -135,10 +144,12 @@ async function getImagesData() {
 
 // 每张图片都要单独请求一个页面的情况
 async function getImages() {
-  const fileData = readJsonFile(chapterFile)
+    // 四个 serialFile shortFile singleFile appendixFile
+    const filePath = serialFile
+  const fileData = readJsonFile(filePath)
   const classify = globalClassify
   const preBaseRoot = `${baseRoot}${classify}/`
-  const chapterList = fileData[classify]
+  const chapterList = fileData.list
   const chapterNum = chapterList.length
   let startDire = 67 // 跟本地的文件夹命名顺序一致，从 1 开始
   // while (startDire <= chapterNum) {
