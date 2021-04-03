@@ -14,7 +14,8 @@ const getChapterContainerReg = (type) => {
     case 1:
     return /<div class="chapter-list cf mt10"+.*?>([\s\S]*?)<\/div*?>/g
     case 2:
-    return /<ul id="chapter-list-1"+.*?>([\s\S]*?)<\/ul*?>/g
+    // return /<ul id="chapter-list-1"+.*?>([\s\S]*?)<\/ul*?>/g
+    return /<ul id="chapter-list-6"+.*?>([\s\S]*?)<\/ul*?>/g
     case 3:
     return /<div class="detail-list-form-con"+.*?>([\s\S]*?)<\/div*?>/g
   }
@@ -45,7 +46,8 @@ const formatChapter = (data,type) => {
 
     const pattern = /<(\S*?)[^>]*>.*?|<.*? \/>/g
     const value1 = data.replace(pattern,'')
-    const value2 = value1.replace(/\s+/g,'')
+    // const value2 = value1.replace(/\s+/g,'') // 去掉全部空格，有英文的时候，中间空格要保留
+    const value2 = value1.replace(/(^\s*)|(\s*$)/g,"") // 去掉两边空格
     chapterLink = {
       name: value2,
       link: page,
@@ -126,7 +128,8 @@ const sortChapterLink = (data,type) => {
   }
 }
 
-const classifyData = (data,type) => {
+// 如果本地原本就有数据，则要进行合并，而不是全覆盖
+const classifyData = (data,type,localData) => {
   // 常见的有 serial-正式连载，short-短篇，single-单行本，appendix-卷附录，
   let intiData = {
     serial:[],
@@ -141,7 +144,7 @@ const classifyData = (data,type) => {
       intiData.short.unshift(formatData)
       continue;
     }
-    if (element.indexOf('卷')>-1) {
+    if (element.indexOf('before')>-1) {
       const formatData = formatChapter(element,type)
       intiData.appendix.unshift(formatData)
       continue;
@@ -152,9 +155,9 @@ const classifyData = (data,type) => {
       continue;
     }
 
-    if (element.indexOf('before')>-1) {
-      continue;
-    }
+    // if (element.indexOf('before')>-1) {
+    //   continue;
+    // }
 
     const formatData = formatChapter(element,type)
     intiData.serial.unshift(formatData)
@@ -162,6 +165,15 @@ const classifyData = (data,type) => {
   }
 
   // 有的网站并不是按照正确顺序排列，所以还是排序一下
+  if (localData && localData.serial) {
+    // 可以根据情况覆盖不同的部分
+    // localData.serial = sortChapterLink(intiData.serial,2)
+    // localData.short = sortChapterLink(intiData.short,2)
+    // localData.single = sortChapterLink(intiData.single,2)
+    localData.appendix = sortChapterLink(intiData.appendix,2)
+    return localData
+  }
+
   intiData.serial = sortChapterLink(intiData.serial,2)
   intiData.short = sortChapterLink(intiData.short,2)
   intiData.single = sortChapterLink(intiData.single,2)
