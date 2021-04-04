@@ -2,7 +2,7 @@
 var fs = require("fs");
 var path = require("path");
 
-var dealPath = '../comic/diYuLe/serial'
+var dealPath = '../comic/demo/serial'
 // var dealFile = [141] // 测试 需要重命名的文件夹
 var dealFile = [137,138] // 需要重命名的文件夹
 var fileArr = []; // 存储目标文件路径

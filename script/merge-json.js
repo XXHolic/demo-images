@@ -2,8 +2,8 @@ var fs = require("fs");
 var path = require("path");
 var currentPath = process.cwd(); // 获取当前执行路径
 
-var dealPath = '../comic/diYuLe/serial'
-var failFilePath = '../comic/diYuLe/down-fail.json' // 合并失败的文件
+var dealPath = '../comic/demo/serial'
+var failFilePath = '../comic/demo/down-fail.json' // 合并失败的文件
 var fileArr = []; // 存储目标文件路径
 
 /**

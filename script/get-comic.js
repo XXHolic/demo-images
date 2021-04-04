@@ -20,8 +20,8 @@ const {
   getImageHeader,
 } = require('./helper')
 
-const baseRoot = '../comic/jinJiDeJuRen/'
-const comicMark = 'jinjidejuren'
+const baseRoot = '../comic/demo/'
+const comicMark = 'demo'
 // const chapterReqUrl = "https://www.manhuadb.com/manhua/" + comicMark + '/'
 const site = 'https://www.ykmh.com'
 const chapterReqUrl = site + "/manhua/" + comicMark + '/'
