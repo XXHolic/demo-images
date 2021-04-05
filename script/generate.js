@@ -9,14 +9,14 @@ const {
   removeRepeat,
 } = require('./utils')
 const {sortChapterLink} = require('./helper')
-const comicMark = 'yiShouMoDu'
+const comicMark = 'demo'
 const baseRoot = `../comic/${comicMark}/`
 const chapterFile = baseRoot + 'chapter.json' // 包含总的信息，也方便获取解析
 const defaultPrefix = 'https://github.com/XXHolic/demo-images/' // 给的假定的图片前缀，目前无其它用处
 const imagesJsonFileName = 'images.json'
 
 // 有 4 个值 serial short single appendix
-const globalClassify = 'appendix'
+const globalClassify = 'serial'
 let dealPath = `${baseRoot}${globalClassify}`
 let dealFile = [11,12,13,14,15,16,17,18,19,20,21,22,23] // 需要提取的文件夹
 
