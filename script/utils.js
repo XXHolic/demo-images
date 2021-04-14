@@ -83,9 +83,21 @@ function removeRepeat(data) {
   return Array.from(new Set(data))
 }
 
-function regMatch(data,reg) {
-  const matchResult = data.match(reg) || []
-  return matchResult[0]
+function regMatch(data,reg,type=1) {
+  if (type == 1) {
+    const matchResult = data.match(reg) || []
+    return matchResult[0]
+  }
+
+  // data-host="https://i2.manhuadb.com"
+  if (type == 2) {
+    const matchResult = data.match(reg) || []
+    const value = matchResult[0]
+    const valueSplit = value.split('=')
+    const value1 = valueSplit[1]
+    const str = value1.substring(1,value1.length-1)
+    return str
+  }
 }
 
 

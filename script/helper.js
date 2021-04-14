@@ -9,13 +9,15 @@ const {
   regMatch,
 } = require('./utils')
 
+const base64 = require('./base64')
+
 const getChapterContainerReg = (type) => {
   switch(type){
     case 1:
     return /<div class="chapter-list cf mt10"+.*?>([\s\S]*?)<\/div*?>/g
     case 2:
     // return /<ul id="chapter-list-1"+.*?>([\s\S]*?)<\/ul*?>/g
-    return /<ul id="chapter-list-6"+.*?>([\s\S]*?)<\/ul*?>/g
+    return /<ol class="links-of-books num_div"+.*?>([\s\S]*?)<\/ol*?>/g
     case 3:
     return /<div class="detail-list-form-con"+.*?>([\s\S]*?)<\/div*?>/g
   }
@@ -28,7 +30,7 @@ const getChapterReg = (type,comicMark) => {
     case 2:
     return new RegExp('<a href="\/manhua\/'+comicMark+'\/+.*?\/a>','g')
     case 3:
-    return new RegExp('<a href="\/+.*?>([\\s\\S]*?)<\/a>','g')
+    return new RegExp('<a class="" href="\/+.*?>([\\s\\S]*?)<\/a>','g')
     case 4:
     return new RegExp('<a href="\/'+comicMark+'\/+.*?\/a>','g')
   }
@@ -103,6 +105,22 @@ const formatChapter = (data,type) => {
     const imgSrcStr = regMatch(imgStr,srcReg)
     chapterLink = imgSrcStr.substring(1,imgSrcStr.length-1)
   }
+  if (type === 6) {
+    // <a class="" href="/manhua/420/413_4650.html" title="[异能者][山本英夫][文传][C.C]Vol_01">1</a>
+    const linkMatchResult = data.match(/\/+.*?.html/g)
+    const link = linkMatchResult[0]
+    const pattern = /<(\S*?)[^>]*>.*?|<.*? \/>/g
+    const value = data.replace(pattern,'')
+    const order = value?Number(value):0
+    const nameMatchResult = data.match(/title=+.*?."/g)
+    const nameStr = nameMatchResult[0]
+    const name = nameStr.substring(7,nameStr.length-1)
+    chapterLink = {
+      name: name,
+      link: link,
+      order: order
+    }
+  }
 
   return chapterLink
 }
@@ -149,18 +167,18 @@ const classifyData = (data,type,localData) => {
       intiData.appendix.unshift(formatData)
       continue;
     }
-    if (element.indexOf('单行')>-1) {
+    // if (element.indexOf('单行')>-1) {
       const formatData = formatChapter(element,type)
       intiData.single.unshift(formatData)
-      continue;
-    }
+      // continue;
+    // }
 
     // if (element.indexOf('before')>-1) {
     //   continue;
     // }
 
-    const formatData = formatChapter(element,type)
-    intiData.serial.unshift(formatData)
+    // const formatData = formatChapter(element,type)
+    // intiData.serial.unshift(formatData)
 
   }
 
@@ -309,6 +327,49 @@ const getChapterImageData = (pageData,type,url) => {
     },[])
     data.list = listData
     data.total = chapterArr.length
+    data.title = title
+  }
+
+  if (type === 5) {
+    // <script>var img_data =
+    const reg = /<script>var img_data([\s\S]*?)<\/script*?>/g
+    const matchResult = regMatch(pageData,reg)
+    const chapterReg = /'+.*?'/g
+    const chapterStr = regMatch(matchResult,chapterReg)
+    const mainStr = chapterStr.substring(1,chapterStr.length-1)
+    // console.log('---chapterStr---')
+    // console.log(chapterStr)
+    const chapterArr = JSON.parse(base64.decode(mainStr))
+
+    const divReg = /<div class="d-none vg-r-data"+.*?>([\s\S]*?)<\/div*?>/g
+    const divStr = regMatch(pageData,divReg)
+    const totalReg = /data-total="\d{1,4}"/g
+    const totalStr = regMatch(divStr,totalReg,2)
+    const totalNum = Number(totalStr)
+
+    const hostReg = /data-host="+.*?"/g
+    const hostStr = regMatch(divStr,hostReg,2)
+
+    const preReg = /data-img_pre="+.*?"/g
+    const preStr = regMatch(divStr,preReg,2)
+
+    const imgPre = `${hostStr}${preStr}`
+
+    const listData = chapterArr.reduce((acc,cur) => {
+      const url = `${imgPre}${cur.img}`
+      acc.push(url)
+      return acc;
+    },[])
+
+
+
+    const titleReg = /<title>+.*?<\/title>/g
+    const titleStr = regMatch(pageData,titleReg)
+    const pattern = /<(\S*?)[^>]*>.*?|<.*? \/>/g
+    const title = titleStr.replace(pattern,'')
+
+    data.list = listData
+    data.total = totalNum
     data.title = title
   }
   // console.log('data',data)
